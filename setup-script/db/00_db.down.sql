@@ -1,2 +1,2 @@
-DROP DATABASE remoindroute;
-CREATE DATABASE remoindroute;
+DROP DATABASE remindroute;
+CREATE DATABASE remindroute;
