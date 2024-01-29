@@ -8,5 +8,6 @@ import io.ktor.server.response.*
 
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
+        gson {  }
     }
 }
