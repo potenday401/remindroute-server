@@ -16,7 +16,7 @@ object TagTable : Table("tag") {
     override val primaryKey = PrimaryKey(id)
 }
 
-object ExposedTagRepository : TagRepository {
+class ExposedTagRepository : TagRepository {
     override fun findById(id: String): Tag? {
         return transaction {
             val result = TagTable.select { TagTable.id eq id }.map {

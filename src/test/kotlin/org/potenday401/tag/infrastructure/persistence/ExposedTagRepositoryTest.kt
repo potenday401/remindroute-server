@@ -14,7 +14,7 @@ import java.util.*
 
 class ExposedTagRepositoryTest {
 
-    val repository = ExposedTagRepository
+    val repository = ExposedTagRepository()
 
     @Before
     fun setup() {
