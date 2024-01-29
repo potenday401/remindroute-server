@@ -4,3 +4,5 @@ setup-local:
 run:
 	./gradlew clean buildFatJar && java -jar build/libs/remindroute.jar
 
+test:
+	./gradlew clean test

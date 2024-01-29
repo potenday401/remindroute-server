@@ -4,7 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.potenday401.tag.application.TagData
+import org.potenday401.tag.application.dto.TagData
 
 fun Route.tagRouting() {
     route("/tags") {
@@ -14,7 +14,7 @@ fun Route.tagRouting() {
                 return@get call.respondText("id is required", status = HttpStatusCode.BadRequest)
             }
 
-            val tagData = TagData("${id}", "name")
+            val tagData = TagData("${id}", "name", 0, 0)
             call.respond(tagData)
         }
     }
