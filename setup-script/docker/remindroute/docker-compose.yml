@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: remoindroute-mysql
+    restart: always
+    ports:
+      - 3309:3309
+    environment:
+      MYSQL_TCP_PORT: 3307
+      MYSQL_ROOT_PASSWORD: mysqlrootpw
+      MYSQL_DATABASE: remoindroute
+    volumes:
+      - ../../db:/docker-entrypoint-initdb.d
