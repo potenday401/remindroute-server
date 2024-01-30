@@ -144,4 +144,4 @@ setup-script/terraform/.terraform.tfstate.lock.info
 
 
 # pem
-*.pem
+pinpong.pem
