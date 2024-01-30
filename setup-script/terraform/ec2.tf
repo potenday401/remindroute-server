@@ -27,9 +27,9 @@ resource "aws_security_group" "popin-server-sg" {
 }
 
 resource "aws_instance" "popin-server" {
-  ami           = "ami-0a3c3a20c09d6f377"
-  instance_type = "t2.micro"
-  key_name      = "pinpong"
+  ami             = "ami-008677ef1baf82eaf"
+  instance_type   = "t2.micro"
+  key_name        = "pinpong"
   security_groups = [aws_security_group.popin-server-sg.name]
 
   tags = {
