@@ -135,3 +135,13 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+# terraform
+setup-script/terraform/.terraform
+setup-script/terraform/.terraform.lock.hcl
+setup-script/terraform/terraform.tfstate
+setup-script/terraform/terraform.tfstate.backup
+setup-script/terraform/.terraform.tfstate.lock.info
+
+
+# pem
+pinpong.pem
