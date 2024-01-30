@@ -6,3 +6,7 @@ run:
 
 test:
 	./gradlew clean test
+
+ssh:
+	ssh -i pinpong.pem ec2-user@44.217.238.140
+
