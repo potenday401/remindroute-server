@@ -47,4 +47,5 @@ jobs:
           key: ${{ env.AWS_SSH_PRIVATE_KEY }}
           port: ${{ secrets.OCCUPY_SSH_PORT }}
           script: |
+            killall java || true
             java -jar /home/ec2-user/app/build/libs/remindroute.jar > /dev/null &
