@@ -145,6 +145,3 @@ setup-script/terraform/.terraform.tfstate.lock.info
 
 # pem
 pinpong.pem
-
-# smtp
-secrets.conf
