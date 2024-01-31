@@ -148,3 +148,6 @@ pinpong.pem
 
 # smtp
 secrets.conf
+
+# other
+.DS_Store
