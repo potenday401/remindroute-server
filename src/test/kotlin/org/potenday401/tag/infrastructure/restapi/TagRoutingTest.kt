@@ -30,7 +30,7 @@ class TagRoutingTest {
     fun testGetById() = testApplication {
         application {
             install(ContentNegotiation) {
-                gson {  }
+                gson { }
             }
 
             routing {
@@ -52,7 +52,7 @@ class TagRoutingTest {
     fun testCreate() = testApplication {
         application {
             install(ContentNegotiation) {
-                gson {  }
+                gson { }
             }
 
             routing {
@@ -60,9 +60,9 @@ class TagRoutingTest {
             }
         }
 
-        val data = TagCreationData("test-id","test-name")
+        val data = TagCreationData("test-id", "test-name")
 
-        val response = client.post("/tags"){
+        val response = client.post("/tags") {
             contentType(ContentType.Application.Json)
             setBody(Gson().toJson(data))
         }
