@@ -1,9 +1,7 @@
 package org.potenday401.member.application.service
 
 import org.potenday401.member.application.dto.MemberCreationData
-import org.potenday401.member.application.service.exception.EmailSendingFailedException
-import org.potenday401.member.application.service.exception.InvalidEmailFormatException
-import org.potenday401.member.application.service.exception.PasswordMismatchException
+import org.potenday401.member.application.service.exception.*
 import org.potenday401.member.domain.model.EmailAuthentication
 import org.potenday401.member.domain.model.EmailAuthenticationRepository
 import org.potenday401.member.domain.model.Member
@@ -46,13 +44,13 @@ class MemberApplicationService(
     fun generateVerifiedTokenIfValid(email: String, authCode: String): String {
         val request = emailAuthenticationRepository.findByEmail(email);
         if(request == null) {
-            throw InvalidEmailFormatException() // REQUEST notfound로 바꾸자
+            throw RequestNotFoundException()
         } else {
             if(request.authCode !== authCode) {
-                TODO("invalid auth code exception")
+                throw InvalidAuthCodeException()
             }
             if(isExpired(request)) {
-                TODO("expired request exception")
+                throw RequestExpiredException()
             }
         }
         emailAuthenticationRepository.updateAuthenticatedAt(request.id!!, LocalDateTime.now());
@@ -62,7 +60,7 @@ class MemberApplicationService(
     fun createMember(memberCreationData: MemberCreationData) {
         val request = emailAuthenticationRepository.findById(memberCreationData.verifiedToken.toInt())
         if(isExpired(request!!)) {
-            TODO("expired request exception")
+            throw RequestExpiredException()
         }
         if(!PasswordUtil.arePasswordsMatching(memberCreationData.password, memberCreationData.confirmPassword)) {
             throw PasswordMismatchException()
