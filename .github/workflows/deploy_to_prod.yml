@@ -38,3 +38,13 @@ jobs:
           source: "build/libs/remindroute.jar"
           target: ${{ env.DEPLOY_SERVER_DESTINATION }}
           rm: true
+
+      - name: Restart
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.DEPLOY_SERVER_HOST }}
+          username: ${{ env.DEPLOY_SERVER_USER }}
+          key: ${{ env.AWS_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCCUPY_SSH_PORT }}
+          script: |
+            java -jar /home/ec2-user/app/build/libs/remindroute.jar > /dev/null &
