@@ -1,5 +1,6 @@
 package org.potenday401
 
+import com.typesafe.config.ConfigFactory
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -9,7 +10,10 @@ import org.potenday401.tag.domain.model.TagRepository
 import org.potenday401.tag.infrastructure.persistence.ExposedTagRepository
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
+    val applicationConfig = ConfigFactory.load()
+    val port = applicationConfig.getInt("ktor.deployment.port")
+
+    embeddedServer(Netty, port = port, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }
 

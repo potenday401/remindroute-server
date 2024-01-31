@@ -54,5 +54,24 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.mockito:mockito-core:5.9.0")
+}
 
+val profile = if (!project.hasProperty("profile") || project.property("profile") == null) {
+    "local"
+} else {
+    project.property("profile") as String
+}
+
+sourceSets {
+    val main by getting {
+        resources {
+            srcDirs("src/main/resources", "src/main/resources-$profile")
+        }
+    }
+}
+
+tasks {
+    processResources {
+        duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+    }
 }
