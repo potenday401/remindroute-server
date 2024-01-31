@@ -62,8 +62,7 @@ class TagRoutingTest {
 
         val data = TagCreationData("test-id","test-name")
 
-        // '/tags' 와 '/tags/' 구분됨
-        val response = client.post("/tags/"){
+        val response = client.post("/tags"){
             contentType(ContentType.Application.Json)
             setBody(Gson().toJson(data))
         }

@@ -40,6 +40,7 @@ dependencies {
     implementation("io.ktor:ktor-server-cors-jvm")
     implementation("io.ktor:ktor-server-default-headers-jvm")
     implementation("io.ktor:ktor-server-swagger-jvm")
+    implementation("io.github.smiley4:ktor-swagger-ui:2.7.4")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
     implementation("io.ktor:ktor-serialization-gson-jvm")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
