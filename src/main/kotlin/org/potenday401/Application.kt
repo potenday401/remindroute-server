@@ -34,5 +34,6 @@ fun Application.module() {
     configureDatabases()
     configureTemplating()
     configureRouting(tagAppService, memberAppService)
+    configureSwagger()
 
 }
