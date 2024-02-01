@@ -27,7 +27,7 @@ class TagApplicationService(private val tagRepository: TagRepository) {
     }
 
     fun createTag(tagCreationData: TagCreationData) {
-        val tag = Tag(tagCreationData.id, tagCreationData.name)
+        val tag = Tag(tagCreationData.id, tagCreationData.memberId, tagCreationData.name)
         tagRepository.create(tag)
     }
 
@@ -35,6 +35,7 @@ class TagApplicationService(private val tagRepository: TagRepository) {
         return TagData(
             id = tag.id,
             name = tag.name,
+            memberId = tag.memberId,
             createdAt = tag.createdAt.toEpochMilli(),
             modifiedAt = tag.modifiedAt.toEpochMilli()
         )

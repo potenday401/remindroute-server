@@ -39,7 +39,7 @@ class TagRoutingTest {
         }
 
         val testTagId = "test-id"
-        val testTag = TagData(testTagId, "Test Name", 0L, 0L)
+        val testTag = TagData(testTagId, "test-member-id","test-name", 0L, 0L)
         `when`(tagAppService.getTagById(testTagId)).thenReturn(testTag)
 
         val response = client.get("/tags/" + testTagId)
@@ -60,7 +60,7 @@ class TagRoutingTest {
             }
         }
 
-        val data = TagCreationData("test-id", "test-name")
+        val data = TagCreationData("test-id", "tag-member-id","test-name")
 
         val response = client.post("/tags") {
             contentType(ContentType.Application.Json)

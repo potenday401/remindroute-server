@@ -27,8 +27,9 @@ class TagApplicationServiceTest {
     @Test
     fun testGetTagById() {
         val tagId = "tag-id-1"
+        val tagMemberId = "tag-member-id-1"
         val tagName = "tag-name-1"
-        val mockTag = Tag(tagId, tagName)
+        val mockTag = Tag(tagId, tagMemberId, tagName)
         `when`(tagRepository.findById(tagId)).thenReturn(mockTag)
 
         val tagData = tagApplicationService.getTagById(tagId)

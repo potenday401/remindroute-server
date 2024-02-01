@@ -26,6 +26,7 @@ class ExposedTagRepositoryTest {
 
             TagTable.insert {
                 it[id] = "test-id-1"
+                it[memberId] = "test-member-id-1"
                 it[name] = "test-name-1"
                 it[createdAt] = LocalDateTime.now()
                 it[modifiedAt] = LocalDateTime.now()
@@ -33,6 +34,7 @@ class ExposedTagRepositoryTest {
 
             TagTable.insert {
                 it[id] = "test-id-2"
+                it[memberId] = "test-member-id-2"
                 it[name] = "test-name-2"
                 it[createdAt] = LocalDateTime.now()
                 it[modifiedAt] = LocalDateTime.now()
@@ -46,18 +48,20 @@ class ExposedTagRepositoryTest {
 
         assertNotNull(foundTag)
         assertEquals("test-id-1", foundTag?.id)
+        assertEquals("test-member-id-1", foundTag?.memberId)
         assertEquals("test-name-1", foundTag?.name)
     }
 
     @Test
     fun testCreate() {
         val currentTime = LocalDateTime.now()
-        val tag = Tag("test-id-3", "test-name-3", currentTime, currentTime)
+        val tag = Tag("test-id-3", "test-member-id-3","test-name-3", currentTime, currentTime)
 
         transaction {
             repository.create(tag)
             val result = TagTable.select { TagTable.id eq "test-id-3" }.single()
             assertEquals("test-id-3", result[TagTable.id])
+            assertEquals("test-member-id-3", result[TagTable.memberId])
             assertEquals("test-name-3", result[TagTable.name])
         }
     }
