@@ -15,10 +15,10 @@ object EmailUtil {
 
     init {
         val config = ConfigFactory.load()
-        smtpHost = config.getString("smtp.host")
-        smtpPort = config.getInt("smtp.port")
-        smtpUsername = config.getString("smtp.username")
-        smtpPassword = config.getString("smtp.password")
+        smtpHost = config.getString("ktor.smtp.host")
+        smtpPort = config.getInt("ktor.smtp.port")
+        smtpUsername = config.getString("ktor.smtp.username")
+        smtpPassword = config.getString("ktor.smtp.password")
     }
 
     fun sendEmail(subject: String, body: String, to: String) {
