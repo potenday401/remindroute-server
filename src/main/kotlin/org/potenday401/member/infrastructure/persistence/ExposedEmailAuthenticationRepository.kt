@@ -16,22 +16,35 @@ object EmailAuthenticationTable : Table("email_authentication") {
     val authenticatedAt = datetime("authenticated_at")
     override val primaryKey = PrimaryKey(id)
 }
+
 class ExposedEmailAuthenticationRepository : EmailAuthenticationRepository {
     override fun findById(id: Int): EmailAuthentication? {
-        TODO("Not yet implemented")
+        return transaction {
+            EmailAuthenticationTable.select { EmailAuthenticationTable.id eq id }
+                .firstOrNull()?.let {
+                    EmailAuthentication(
+                        id = it[EmailAuthenticationTable.id],
+                        email = it[EmailAuthenticationTable.email],
+                        authCode = it[EmailAuthenticationTable.authCode],
+                        createdAt = it[EmailAuthenticationTable.createdAt],
+                        authenticatedAt = it[EmailAuthenticationTable.authenticatedAt]
+                    )
+                }
+        }
     }
 
     override fun findByEmail(email: String): List<EmailAuthentication> {
         return transaction {
             EmailAuthenticationTable.select { EmailAuthenticationTable.email eq email }
-                .map {row -> EmailAuthentication(
-                    id = row[EmailAuthenticationTable.id],
-                    email = row[EmailAuthenticationTable.email],
-                    authCode = row[EmailAuthenticationTable.authCode],
-                    createdAt = row[EmailAuthenticationTable.createdAt],
-                    authenticatedAt = row[EmailAuthenticationTable.authenticatedAt]
-                )
-            }
+                .map { row ->
+                    EmailAuthentication(
+                        id = row[EmailAuthenticationTable.id],
+                        email = row[EmailAuthenticationTable.email],
+                        authCode = row[EmailAuthenticationTable.authCode],
+                        createdAt = row[EmailAuthenticationTable.createdAt],
+                        authenticatedAt = row[EmailAuthenticationTable.authenticatedAt]
+                    )
+                }
         }
     }
 
@@ -65,7 +78,7 @@ class ExposedEmailAuthenticationRepository : EmailAuthenticationRepository {
 
     override fun updateAuthenticatedAt(id: Int, authenticatedAt: LocalDateTime) {
         transaction {
-            EmailAuthenticationTable.update ({ EmailAuthenticationTable.id eq id }) {
+            EmailAuthenticationTable.update({ EmailAuthenticationTable.id eq id }) {
                 it[EmailAuthenticationTable.authenticatedAt] = authenticatedAt
             }
         }

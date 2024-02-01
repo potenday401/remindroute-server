@@ -69,6 +69,9 @@ class MemberApplicationService(
         if(!PasswordUtil.arePasswordsMatching(memberCreationData.password, memberCreationData.confirmPassword)) {
             throw PasswordMismatchException()
         }
+        if(memberRepository.findByEmail(request.email) != null) {
+            throw MemberAlreadyExistsException()
+        }
         val encodePassword = PasswordUtil.encodePassword(memberCreationData.password)
         val nickname = extractLocalPart(memberCreationData.email)
         val member = Member(memberCreationData.email, nickname, encodePassword)
