@@ -23,9 +23,13 @@ class MemberApplicationService(
     }
 
     fun sendAuthCodeEmail(email: String) {
-        TODO("이메일 !!중복체크!!!")
+
         if(!EmailValidator.isValid(email)) {
             throw InvalidEmailFormatException()
+        }
+
+        if(memberRepository.findByEmail(email) != null) {
+            throw MemberAlreadyExistsException()
         }
 
         val authCode = PasswordUtil.generateRandom6DigitCode()
@@ -43,7 +47,7 @@ class MemberApplicationService(
     }
 
     fun generateVerifiedTokenIfValid(email: String, authCode: String): String {
-        val request = emailAuthenticationRepository.findByEmail(email);
+        val request = emailAuthenticationRepository.findByEmail(email)
         if(request == null) {
             throw RequestNotFoundException()
         } else {

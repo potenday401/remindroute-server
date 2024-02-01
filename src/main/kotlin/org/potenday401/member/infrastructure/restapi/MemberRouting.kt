@@ -22,6 +22,8 @@ fun Route.memberRouting(memberAppService : MemberApplicationService) {
                 call.respondText("Invalid email format", status = HttpStatusCode.BadRequest)
             } catch(e: EmailSendingFailedException) {
                 call.respondText("Failed to send email", status = HttpStatusCode.InternalServerError)
+            } catch(e: MemberAlreadyExistsException) {
+                call.respondText("User already exists", status = HttpStatusCode.Conflict)
             }
         }
 
