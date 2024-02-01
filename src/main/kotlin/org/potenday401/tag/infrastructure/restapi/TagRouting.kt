@@ -43,7 +43,7 @@ fun Route.tagRouting(tagAppService: TagApplicationService) {
             call.respond(tag)
         }
 
-        get( {
+        get({
             description = "get tags"
             response {
                 HttpStatusCode.OK to {
@@ -62,7 +62,7 @@ fun Route.tagRouting(tagAppService: TagApplicationService) {
             call.respond(tags)
         }
 
-        get("/by-name",{
+        get("/by-name", {
             description = "get tags by name"
             request {
                 queryParameter<String>("name") {
@@ -84,14 +84,17 @@ fun Route.tagRouting(tagAppService: TagApplicationService) {
         }) {
             val names = call.request.queryParameters.getAll("name")
             if (names.isNullOrEmpty()) {
-                return@get call.respondText("names are required", status = HttpStatusCode.BadRequest)
+                return@get call.respondText(
+                    "names are required",
+                    status = HttpStatusCode.BadRequest
+                )
             }
 
             val tags = tagAppService.getAllTagsByNameIn(names)
             call.respond(tags)
         }
 
-        post( {
+        post({
             description = "create tag"
             request {
                 body<TagCreationData>()
@@ -102,7 +105,7 @@ fun Route.tagRouting(tagAppService: TagApplicationService) {
 
                 }
             }
-        } ) {
+        }) {
             val tagCreationData = call.receive<TagCreationData>()
             tagAppService.createTag(tagCreationData)
             call.respondText("Tag created successfully", status = HttpStatusCode.Created)

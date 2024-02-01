@@ -9,6 +9,7 @@ import org.potenday401.tag.domain.model.TagRepository
 
 object TagTable : Table("tag") {
     val id: Column<String> = varchar("id", 64)
+    val memberId: Column<String> = varchar("member_id", 64)
     val name: Column<String> = varchar("name", 128)
     val createdAt = datetime("created_at")
     val modifiedAt = datetime("modified_at")
@@ -23,6 +24,7 @@ class ExposedTagRepository : TagRepository {
                 Tag(
                     id = it[TagTable.id],
                     name = it[TagTable.name],
+                    memberId = it[TagTable.memberId],
                     createdAt = it[TagTable.createdAt],
                     modifiedAt = it[TagTable.modifiedAt]
                 )
@@ -37,6 +39,7 @@ class ExposedTagRepository : TagRepository {
                 Tag(
                     id = row[TagTable.id],
                     name = row[TagTable.name],
+                    memberId = row[TagTable.memberId],
                     createdAt = row[TagTable.createdAt],
                     modifiedAt = row[TagTable.modifiedAt]
                 )
@@ -50,6 +53,7 @@ class ExposedTagRepository : TagRepository {
                 Tag(
                     id = row[TagTable.id],
                     name = row[TagTable.name],
+                    memberId = row[TagTable.memberId],
                     createdAt = row[TagTable.createdAt],
                     modifiedAt = row[TagTable.modifiedAt]
                 )
@@ -62,6 +66,7 @@ class ExposedTagRepository : TagRepository {
             TagTable.insert {
                 it[id] = tag.id
                 it[name] = tag.name
+                it[memberId] = tag.memberId
                 it[createdAt] = tag.createdAt
                 it[modifiedAt] = tag.modifiedAt
             }

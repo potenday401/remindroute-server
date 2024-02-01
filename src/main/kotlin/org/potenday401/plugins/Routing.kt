@@ -6,10 +6,12 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.potenday401.member.application.service.MemberApplicationService
 import org.potenday401.member.infrastructure.restapi.memberRouting
+import org.potenday401.photopin.application.service.PhotoPinApplicationService
+import org.potenday401.photopin.infrastructure.restapi.photoPinRouting
 import org.potenday401.tag.application.service.TagApplicationService
 import org.potenday401.tag.infrastructure.restapi.tagRouting
 
-fun Application.configureRouting(tagAppService: TagApplicationService,  memberAppService: MemberApplicationService) {
+fun Application.configureRouting(tagAppService: TagApplicationService,  memberAppService: MemberApplicationService, photoPinAppService: PhotoPinApplicationService) {
     install(Resources)
     routing {
         get("/hello") {
@@ -18,6 +20,6 @@ fun Application.configureRouting(tagAppService: TagApplicationService,  memberAp
 
         tagRouting(tagAppService)
         memberRouting(memberAppService)
-
+        photoPinRouting(photoPinAppService)
     }
 }
