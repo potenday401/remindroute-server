@@ -1,6 +1,8 @@
 package org.potenday401.photopin.application.service
 
 
+import org.potenday401.common.domain.model.File
+import org.potenday401.common.domain.model.FileStorageService
 import org.potenday401.photopin.application.dto.LatLngData
 import org.potenday401.photopin.application.dto.PhotoPinCreationData
 import org.potenday401.photopin.application.dto.PhotoPinData
@@ -10,11 +12,12 @@ import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.photopin.domain.model.PhotoPinRepository
 import org.potenday401.util.toEpochMilli
 import org.potenday401.util.toLocalDateTime
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
+import java.util.*
 
-class PhotoPinApplicationService(private val photoPinRepository: PhotoPinRepository) {
+class PhotoPinApplicationService(
+    private val photoPinRepository: PhotoPinRepository,
+    private val fileStorageService: FileStorageService
+) {
 
     fun getPhotoPinById(id: String): PhotoPinData? {
         val photoPin = photoPinRepository.findById(id)
@@ -29,11 +32,16 @@ class PhotoPinApplicationService(private val photoPinRepository: PhotoPinReposit
         return photoPinRepository.findAll().map { toPhotoPinData(it) }
     }
 
-
     fun createPhotoPin(photoPinCreationData: PhotoPinCreationData) {
-        // TODO: save file to S3 then get url
         // TODO: add tagId validation
-        val photoUrl: String = ""
+        // photoPinCreationData
+
+        val file = createFile(
+            photoPinCreationData.photoFileBase64Payload,
+            photoPinCreationData.photoFileExt
+        )
+        val dir = "images/${photoPinCreationData.memberId}"
+        val photoUrl = fileStorageService.storeFile(dir, file).toExternalForm()
         val latLng =
             LatLng(photoPinCreationData.latLng.latitude, photoPinCreationData.latLng.longitude)
 
@@ -46,6 +54,11 @@ class PhotoPinApplicationService(private val photoPinRepository: PhotoPinReposit
             latLng
         )
         photoPinRepository.create(photoPin)
+    }
+
+    private fun createFile(base64Payload: String, ext: String): File {
+        val fileByte: ByteArray = Base64.getDecoder().decode(base64Payload)
+        return File(fileByte, ext)
     }
 }
 
