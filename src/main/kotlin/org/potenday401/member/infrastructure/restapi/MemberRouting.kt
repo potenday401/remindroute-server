@@ -33,7 +33,8 @@ fun Route.memberRouting(memberAppService : MemberApplicationService) {
                 val email = emailVerificationData.email
                 val authCode = emailVerificationData.authCode
                 val verifiedToken = memberAppService.generateVerifiedTokenIfValid(email, authCode)
-                call.respond(verifiedToken)
+                val response = mapOf("verifiedToken" to verifiedToken)
+                call.respond(response)
             } catch(e: RequestNotFoundException) {
                 call.respondText("Request not found", status = HttpStatusCode.NotFound)
             } catch(e: InvalidAuthCodeException) {

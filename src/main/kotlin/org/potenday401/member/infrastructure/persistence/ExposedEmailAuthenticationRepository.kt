@@ -64,8 +64,10 @@ class ExposedEmailAuthenticationRepository : EmailAuthenticationRepository {
     }
 
     override fun updateAuthenticatedAt(id: Int, authenticatedAt: LocalDateTime) {
-        EmailAuthenticationTable.update ({ EmailAuthenticationTable.id eq id }) {
-            it[EmailAuthenticationTable.authenticatedAt] = authenticatedAt
+        transaction {
+            EmailAuthenticationTable.update ({ EmailAuthenticationTable.id eq id }) {
+                it[EmailAuthenticationTable.authenticatedAt] = authenticatedAt
+            }
         }
     }
 

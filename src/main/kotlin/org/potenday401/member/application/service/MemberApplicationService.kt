@@ -11,7 +11,6 @@ import org.potenday401.util.validator.EmailValidator
 import org.potenday401.util.PasswordUtil
 import java.lang.RuntimeException
 import java.time.LocalDateTime
-import java.util.*
 
 class MemberApplicationService(
     private val memberRepository: MemberRepository,
@@ -51,14 +50,14 @@ class MemberApplicationService(
         if(request == null) {
             throw RequestNotFoundException()
         } else {
-            if(request.authCode !== authCode) {
+            if(request.authCode != authCode) {
                 throw InvalidAuthCodeException()
             }
             if(isExpired(request)) {
                 throw RequestExpiredException()
             }
         }
-        emailAuthenticationRepository.updateAuthenticatedAt(request.id!!, LocalDateTime.now());
+        emailAuthenticationRepository.updateAuthenticatedAt(request.id!!, LocalDateTime.now())
         return request.id.toString() // 토큰은 일단 ID값으로 한다.
     }
 
