@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `email_authentication` (
+CREATE TABLE IF NOT EXISTS `member` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `email` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL UNIQUE,
   `nickname` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
