@@ -4,4 +4,6 @@ interface MemberRepository {
     fun findById(id: Int): Member?
     fun findByEmail(email: String): Member?
     fun create(member: Member)
+
+    fun update(member: Member)
 }

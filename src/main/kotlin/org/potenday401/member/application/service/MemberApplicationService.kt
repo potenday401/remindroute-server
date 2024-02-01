@@ -32,7 +32,7 @@ class MemberApplicationService(
             throw MemberAlreadyExistsException()
         }
 
-        val authCode = PasswordUtil.generateRandom6DigitCode()
+        val authCode = PasswordUtil.generateRandom5DigitCode()
         val subject = "[서비스명] 서비스 가입을 위한 인증 코드"
         val message = "인증번호를 앱에 입력하세요.\n인증번호: $authCode"
 
@@ -47,7 +47,7 @@ class MemberApplicationService(
     }
 
     fun generateVerifiedTokenIfValid(email: String, authCode: String): String {
-        val request = emailAuthenticationRepository.findByEmail(email)
+        val request = emailAuthenticationRepository.findLatestByEmail(email)
         if(request == null) {
             throw RequestNotFoundException()
         } else {
@@ -76,6 +76,9 @@ class MemberApplicationService(
         memberRepository.create(member)
     }
 
+    fun resetPassword() {
+        TODO("비밀번호 재설정. 인증 받고 -> 재설정 필요")
+    }
     private fun extractLocalPart(email: String): String {
         val atIndex = email.indexOf('@')
         return email.substring(0, atIndex)

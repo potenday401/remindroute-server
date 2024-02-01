@@ -38,6 +38,10 @@ class ExposedMemberRepository : MemberRepository {
         }
     }
 
+    override fun update(member: Member) {
+        TODO("비밀번호 재설정. 닉네임 재설정(?)")
+    }
+
     private fun findMemberByCondition(condition: (SqlExpressionBuilder.() -> Op<Boolean>)): Member? {
         return transaction {
             val result = MemberTable.select(condition)
