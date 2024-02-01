@@ -14,7 +14,7 @@ import java.net.URL
 import java.util.*
 
 class AwsS3FileStorageService(
-    region: String?,
+    region: String,
     bucketName: String,
     accessKey: String?,
     secretKey: String?
