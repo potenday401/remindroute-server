@@ -4,6 +4,7 @@ import org.potenday401.tag.application.dto.TagCreationData
 import org.potenday401.tag.application.dto.TagData
 import org.potenday401.tag.domain.model.Tag
 import org.potenday401.tag.domain.model.TagRepository
+import org.potenday401.util.toEpochMilli
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -41,7 +42,4 @@ class TagApplicationService(private val tagRepository: TagRepository) {
         )
     }
 
-    private fun LocalDateTime.toEpochMilli(): Long {
-        return this.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    }
 }

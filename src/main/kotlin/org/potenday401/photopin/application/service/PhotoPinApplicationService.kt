@@ -7,6 +7,8 @@ import org.potenday401.photopin.application.dto.PhotoPinData
 import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.photopin.domain.model.PhotoPinRepository
+import org.potenday401.util.toEpochMilli
+import org.potenday401.util.toLocalDateTime
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -61,13 +63,4 @@ class PhotoPinApplicationService(private val photoPinRepository: PhotoPinReposit
             longitude = latLng.longitude
         )
     }
-
-    private fun LocalDateTime.toEpochMilli(): Long {
-        return this.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    }
-
-    fun Long.toLocalDateTime(): LocalDateTime {
-        return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDateTime()
-    }
-
 }

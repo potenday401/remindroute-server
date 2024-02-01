@@ -11,7 +11,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.potenday401.photopin.domain.model.*
-import java.time.LocalDateTime
 import java.util.*
 
 class ExposedPhotoPinRepositoryTest {
