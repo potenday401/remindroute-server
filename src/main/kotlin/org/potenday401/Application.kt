@@ -31,10 +31,12 @@ fun Application.module() {
     val tagRepository = ExposedTagRepository()
     val tagAppService = TagApplicationService(tagRepository)
 
-    val s3Region = environment.config.propertyOrNull("ktor.aws.s3.region")?.getString() ?: throw RuntimeException("s3 props not found")
-    val s3BucketName = environment.config.propertyOrNull("ktor.aws.s3.bucket_name")?.getString() ?: throw RuntimeException("s3 props not found")
-    val s3UserAccessKey= environment.config.propertyOrNull("ktor.aws.s3.user_access_key")?.getString() ?: throw RuntimeException("s3 props not found")
-    val s3UserAccessSecret = environment.config.propertyOrNull("ktor.aws.s3.user_access_secret")?.getString() ?: throw RuntimeException("s3 props not found")
+    val config = ConfigFactory.load()
+    val s3Region = config.getString("ktor.aws.s3.region")
+    val s3BucketName = config.getString("ktor.aws.s3.bucket_name")
+    val s3UserAccessKey= config.getString("ktor.aws.s3.user_access_key")
+    val s3UserAccessSecret = config.getString("ktor.aws.s3.user_access_secret")
+
     val fileStorageService = AwsS3FileStorageService(
         s3Region,
         s3BucketName,

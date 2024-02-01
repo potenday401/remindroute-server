@@ -4,6 +4,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
+import org.potenday401.common.domain.model.FileStorageService
 import org.potenday401.photopin.application.service.PhotoPinApplicationService
 import org.potenday401.photopin.domain.model.PhotoPinRepository
 import org.potenday401.photopin.domain.model.mockPhotoPin1
@@ -17,11 +18,14 @@ class PhotoPinApplicationServiceTest {
     @Mock
     private lateinit var photoPinRepository: PhotoPinRepository
 
+    @Mock
+    private lateinit var fileStorageService: FileStorageService
+
     private lateinit var photoPinApplicationService: PhotoPinApplicationService
 
     @Before
     fun setUp() {
-        photoPinApplicationService = PhotoPinApplicationService(photoPinRepository)
+        photoPinApplicationService = PhotoPinApplicationService(photoPinRepository, fileStorageService)
     }
 
     @Test

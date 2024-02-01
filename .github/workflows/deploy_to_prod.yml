@@ -48,4 +48,6 @@ jobs:
           port: ${{ secrets.OCCUPY_SSH_PORT }}
           script: |
             killall java || true
+            export AWS_S3_USER_ACCESS_KEY=${{ secrets.AWS_S3_USER_ACCESS_KEY }}
+            export AWS_S3_USER_ACCESS_SECRET=${{ secrets.AWS_S3_USER_ACCESS_SECRET }}
             java -jar /home/ec2-user/app/build/libs/remindroute.jar > /dev/null &
