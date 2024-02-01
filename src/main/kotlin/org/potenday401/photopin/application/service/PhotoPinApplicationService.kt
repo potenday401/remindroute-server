@@ -4,6 +4,7 @@ package org.potenday401.photopin.application.service
 import org.potenday401.photopin.application.dto.LatLngData
 import org.potenday401.photopin.application.dto.PhotoPinCreationData
 import org.potenday401.photopin.application.dto.PhotoPinData
+import org.potenday401.photopin.application.service.PhotoPinDataConverter.toPhotoPinData
 import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.photopin.domain.model.PhotoPinRepository
@@ -17,7 +18,7 @@ class PhotoPinApplicationService(private val photoPinRepository: PhotoPinReposit
 
     fun getPhotoPinById(id: String): PhotoPinData? {
         val photoPin = photoPinRepository.findById(id)
-        if(photoPin != null) {
+        if (photoPin != null) {
             return toPhotoPinData(photoPin)
         } else {
             return null
@@ -31,8 +32,10 @@ class PhotoPinApplicationService(private val photoPinRepository: PhotoPinReposit
 
     fun createPhotoPin(photoPinCreationData: PhotoPinCreationData) {
         // TODO: save file to S3 then get url
+        // TODO: add tagId validation
         val photoUrl: String = ""
-        val latLng = LatLng(photoPinCreationData.latLng.latitude, photoPinCreationData.latLng.latitude)
+        val latLng =
+            LatLng(photoPinCreationData.latLng.latitude, photoPinCreationData.latLng.longitude)
 
         val photoPin = PhotoPin(
             photoPinCreationData.photoPinId,
@@ -40,11 +43,14 @@ class PhotoPinApplicationService(private val photoPinRepository: PhotoPinReposit
             photoPinCreationData.tagIds,
             photoUrl,
             photoPinCreationData.photoDateTime.toLocalDateTime(),
-            latLng)
+            latLng
+        )
         photoPinRepository.create(photoPin)
     }
+}
 
-    private fun toPhotoPinData(photoPin: PhotoPin): PhotoPinData {
+object PhotoPinDataConverter {
+    fun toPhotoPinData(photoPin: PhotoPin): PhotoPinData {
         return PhotoPinData(
             photoPinId = photoPin.id,
             memberId = photoPin.memberId,
@@ -57,10 +63,11 @@ class PhotoPinApplicationService(private val photoPinRepository: PhotoPinReposit
         )
     }
 
-    private fun toLatLngData(latLng: LatLng): LatLngData {
+    fun toLatLngData(latLng: LatLng): LatLngData {
         return LatLngData(
             latitude = latLng.latitude,
             longitude = latLng.longitude
         )
     }
 }
+

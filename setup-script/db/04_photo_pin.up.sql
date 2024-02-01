@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `photo_pin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `photo_pin_tag_ids` (
-  `photo_pin_id` varchar(64) NOT NULL UNIQUE,
+  `photo_pin_id` varchar(64) NOT NULL,
   `tag_id` varchar(64) NOT NULL,
   PRIMARY KEY (`photo_pin_id`,`tag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
