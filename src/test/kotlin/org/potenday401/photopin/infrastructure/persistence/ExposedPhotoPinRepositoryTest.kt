@@ -10,14 +10,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.potenday401.photopin.domain.model.LatLng
-import org.potenday401.photopin.domain.model.PhotoPin
+import org.potenday401.photopin.domain.model.*
 import java.time.LocalDateTime
 import java.util.*
 
 class ExposedPhotoPinRepositoryTest {
 
-    val repository = ExposedPhotoPinRepository()
+    private val repository = ExposedPhotoPinRepository()
 
     @Before
     fun setup() {
@@ -28,58 +27,33 @@ class ExposedPhotoPinRepositoryTest {
             SchemaUtils.create(PhotoPinTable)
             SchemaUtils.create(PhotoPinTagIdsTable)
 
-            val photoPin1 = PhotoPin(
-                "test-id-1",
-                "test-member-id-1",
-                mutableListOf("test-tag-id-1", "test-tag-id-2"),
-                "url",
-                LocalDateTime.now(),
-                LatLng(5.0, 6.0)
-            )
-
             PhotoPinTable.insert {
-                it[id] = photoPin1.id
-                it[memberId] = photoPin1.memberId
-                it[photoUrl] = photoPin1.photoUrl
-                it[photoDateTime] = photoPin1.photoDateTime
-                it[latitude] = photoPin1.latLng.latitude
-                it[longitude] = photoPin1.latLng.longitude
-                it[createdAt] = photoPin1.createdAt
-                it[modifiedAt] = photoPin1.modifiedAt
+                it[id] = mockPhotoPin1.id
+                it[memberId] = mockPhotoPin1.memberId
+                it[photoUrl] = mockPhotoPin1.photoUrl
+                it[photoDateTime] = mockPhotoPin1.photoDateTime
+                it[latitude] = mockPhotoPin1.latLng.latitude
+                it[longitude] = mockPhotoPin1.latLng.longitude
+                it[createdAt] = mockPhotoPin1.createdAt
+                it[modifiedAt] = mockPhotoPin1.modifiedAt
             }
 
-            photoPin1.tagIds.forEach { tagId ->
+            mockPhotoPin1.tagIds.forEach { tagId ->
                 PhotoPinTagIdsTable.insert {
-                    it[photoPinId] = photoPin1.id
+                    it[photoPinId] = mockPhotoPin1.id
                     it[this.tagId] = tagId
                 }
             }
 
-            val photoPin2 = PhotoPin(
-                "test-id-2",
-                "test-member-id-2",
-                mutableListOf("test-tag-id-3", "test-tag-id-4"),
-                "url",
-                LocalDateTime.now(),
-                LatLng(5.0, 6.0)
-            )
-
             PhotoPinTable.insert {
-                it[id] = photoPin2.id
-                it[memberId] = photoPin2.memberId
-                it[photoUrl] = photoPin2.photoUrl
-                it[photoDateTime] = photoPin2.photoDateTime
-                it[latitude] = photoPin2.latLng.latitude
-                it[longitude] = photoPin2.latLng.longitude
-                it[createdAt] = photoPin2.createdAt
-                it[modifiedAt] = photoPin2.modifiedAt
-            }
-
-            photoPin2.tagIds.forEach { tagId ->
-                PhotoPinTagIdsTable.insert {
-                    it[photoPinId] = photoPin2.id
-                    it[this.tagId] = tagId
-                }
+                it[id] = mockPhotoPin2.id
+                it[memberId] = mockPhotoPin2.memberId
+                it[photoUrl] = mockPhotoPin2.photoUrl
+                it[photoDateTime] = mockPhotoPin2.photoDateTime
+                it[latitude] = mockPhotoPin2.latLng.latitude
+                it[longitude] = mockPhotoPin2.latLng.longitude
+                it[createdAt] = mockPhotoPin2.createdAt
+                it[modifiedAt] = mockPhotoPin2.modifiedAt
             }
 
         }
@@ -87,37 +61,28 @@ class ExposedPhotoPinRepositoryTest {
 
     @Test
     fun testFindById() {
-        val foundPhotoPin = repository.findById("test-id-1")
+        val foundPhotoPin = repository.findById(mockPhotoPin1.id)
 
         assertNotNull(foundPhotoPin)
-        assertEquals("test-id-1", foundPhotoPin?.id)
-        assertEquals("test-member-id-1", foundPhotoPin?.memberId)
-        assertEquals(5.0, foundPhotoPin?.latLng?.latitude)
-        assertEquals(6.0, foundPhotoPin?.latLng?.longitude)
-        assertEquals("test-tag-id-1", foundPhotoPin?.tagIds?.get(0) ?: "")
-        assertEquals("test-tag-id-2", foundPhotoPin?.tagIds?.get(1) ?: "")
+        assertEquals(mockPhotoPin1.id, foundPhotoPin?.id)
+        assertEquals(mockPhotoPin1.memberId, foundPhotoPin?.memberId)
+        assertEquals(mockPhotoPin1.latLng.latitude, foundPhotoPin?.latLng?.latitude)
+        assertEquals(mockPhotoPin1.latLng.longitude, foundPhotoPin?.latLng?.longitude)
+        assertEquals(mockPhotoPin1.tagIds[0], foundPhotoPin?.tagIds?.get(0) ?: "")
+        assertEquals(mockPhotoPin1.tagIds[1], foundPhotoPin?.tagIds?.get(1) ?: "")
     }
 
     @Test
     fun testCreate() {
-        val photoPin = PhotoPin(
-            "test-id-3",
-            "test-member-id-3",
-            mutableListOf("test-tag-id-1", "test-tag-id-2"),
-            "url",
-            LocalDateTime.now(),
-            LatLng(5.0, 6.0)
-        )
-
         transaction {
-            repository.create(photoPin)
-            val result = repository.findById(photoPin.id)
-            assertEquals("test-id-3", result?.id)
-            assertEquals("test-member-id-3", result?.memberId)
-            assertEquals(5.0, result?.latLng?.latitude)
-            assertEquals(6.0, result?.latLng?.longitude)
-            assertEquals("test-tag-id-1", result?.tagIds?.get(0) ?: "")
-            assertEquals("test-tag-id-2", result?.tagIds?.get(1) ?: "")
+            repository.create(mockPhotoPin3)
+            val result = repository.findById(mockPhotoPin3.id)
+            assertEquals(mockPhotoPin3.id, result?.id)
+            assertEquals(mockPhotoPin3.memberId, result?.memberId)
+            assertEquals(mockPhotoPin3.latLng.latitude, result?.latLng?.latitude)
+            assertEquals(mockPhotoPin3.latLng.longitude, result?.latLng?.longitude)
+            assertEquals(mockPhotoPin3.tagIds[0], result?.tagIds?.get(0) ?: "")
+            assertEquals(mockPhotoPin3.tagIds[1], result?.tagIds?.get(1) ?: "")
         }
     }
 
@@ -126,11 +91,11 @@ class ExposedPhotoPinRepositoryTest {
         val photoPins = repository.findAll()
 
         assertTrue(photoPins.stream().anyMatch { photoPin ->
-            photoPin.id == "test-id-1" && photoPin.memberId == "test-member-id-1"
+            photoPin.id == mockPhotoPin1.id && photoPin.memberId == mockPhotoPin1.memberId
         })
 
         assertTrue(photoPins.stream().anyMatch { photoPin ->
-            photoPin.id == "test-id-2" && photoPin.memberId == "test-member-id-2"
+            photoPin.id == mockPhotoPin2.id && photoPin.memberId == mockPhotoPin2.memberId
         })
 
     }

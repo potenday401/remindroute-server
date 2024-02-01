@@ -35,7 +35,7 @@ class TagApplicationServiceTest {
         val tagData = tagApplicationService.getTagById(tagId)
 
         assertNotNull(tagData)
-        assertEquals(tagId, tagData.id)
+        assertEquals(tagId, tagData.tagId)
         assertEquals(tagName, tagData.name)
     }
 
