@@ -22,9 +22,9 @@ object PasswordUtil {
         return password == confirmPassword
     }
 
-    fun generateRandom6DigitCode(): String {
+    fun generateRandom5DigitCode(): String {
         val random = Random.Default
-        return random.nextInt(100000, 999999).toString()
+        return random.nextInt(10000, 99999).toString()
     }
 
     fun aesEncrypt(key: String, value: String): String {

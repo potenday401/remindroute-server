@@ -22,7 +22,6 @@ object EmailUtil {
     }
 
     fun sendEmail(subject: String, body: String, to: String) {
-        TODO("Queue에 담아 비동기 처리 필요")
         val props = Properties()
         props["mail.smtp.host"] = smtpHost
         props["mail.smtp.port"] = smtpPort
