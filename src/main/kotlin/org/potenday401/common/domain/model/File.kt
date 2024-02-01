@@ -16,9 +16,4 @@ class File(val payload: ByteArray, val ext: String) {
         throw IllegalArgumentException("max file size:${fileMaxSize} Bytes")
     }
 
-    companion object {
-        private const val fileMaxSize = 52428800 // 50MB
-    }
-
-
 }

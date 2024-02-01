@@ -50,4 +50,6 @@ jobs:
             killall java || true
             export AWS_S3_USER_ACCESS_KEY=${{ secrets.AWS_S3_USER_ACCESS_KEY }}
             export AWS_S3_USER_ACCESS_SECRET=${{ secrets.AWS_S3_USER_ACCESS_SECRET }}
+            export SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}
+            export SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
             java -jar /home/ec2-user/app/build/libs/remindroute.jar > /dev/null &

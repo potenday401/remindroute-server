@@ -151,3 +151,6 @@ secrets.conf
 
 # other
 .DS_Store
+
+# local-conf
+src/main/resources-local/application.conf
