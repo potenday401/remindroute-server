@@ -32,7 +32,7 @@ INSERT INTO `photo_pin` (`id`, `member_id`, `photo_url`, `photo_date_time`, `lat
     ('photopin12', 'member1', 'https://dummyimage.com/300.png/12f/fff', '2024-01-02 00:00:00', 34.052234, -118.243685, '2024-01-14 00:00:00', '2024-01-02 00:00:00'),
     ('photopin14', 'member1', 'https://dummyimage.com/300.png/132f/fff', '2024-01-30 00:00:00', 34.052234, -118.243685, '2024-01-16 00:00:00', '2024-01-02 00:00:00'),
     ('photopin15', 'member1', 'https://dummyimage.com/300.png/132f/fff', '2024-01-30 00:00:00', 34.052234, -118.243685, '2024-01-28 00:00:00', '2024-01-02 00:00:00'),
-    ('photopin16', 'member1', 'https://dummyimage.com/300.png/132f/fff', '2024-01-30 00:00:00', 34.052234, -118.243685, '2024-01-14 00:00:00', '2024-01-02 00:00:00'),
+    ('photopin16', 'member1', 'https://dummyimage.com/300.png/132f/fff', '2024-01-30 00:00:00', 34.052234, -118.243685, '2024-01-14 00:00:00', '2024-01-02 00:00:00');
 
 
 INSERT INTO `photo_pin_tag_ids` (`photo_pin_id`, `tag_id`) VALUES
@@ -62,5 +62,5 @@ INSERT INTO `photo_pin_tag_ids` (`photo_pin_id`, `tag_id`) VALUES
     ('photopin14', 'tag4'),
     ('photopin15', 'tag1'),
     ('photopin16', 'tag1'),
-    ('photopin16', 'tag2'),
+    ('photopin16', 'tag2');
 

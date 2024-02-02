@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS `tag` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `tag` (`id`, `member_id`, `name`, `created_at`, `modified_at`) VALUES
-('tag1', 'member1', 'Nature', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('tag2', 'member1', 'Cityscape', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('tag3', 'member1', 'Nightlife', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('tag4', 'member1', 'Wildlife', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-('tag5', 'member1', 'Wildlife', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+('tag1', 'member1', '땅', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+('tag2', 'member1', '불', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+('tag3', 'member1', '바람','2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+('tag4', 'member1', '물', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+('tag5', 'member1', '마음', '2024-01-01 00:00:00', '2024-01-01 00:00:00');

@@ -11,9 +11,11 @@ import io.ktor.server.routing.*
 
 import org.potenday401.photopin.application.dto.PhotoPinCreationData
 import org.potenday401.photopin.application.dto.PhotoPinData
+import org.potenday401.photopin.application.dto.TagAlbumDocument
 import org.potenday401.photopin.application.service.PhotoPinApplicationService
+import org.potenday401.photopin.infrastructure.persistence.PhotoPinQueries
 
-fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService) {
+fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoPinQueries: PhotoPinQueries) {
     route("/photo-pins", {
         tags = listOf("photoPins operation")
     }) {
@@ -78,6 +80,34 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService) {
             val photoPinCreationData = call.receive<PhotoPinCreationData>()
             photoPinAppService.createPhotoPin(photoPinCreationData)
             call.respondText("PhotoPin created successfully", status = HttpStatusCode.Created)
+        }
+    }
+
+    route("/tag-album", {
+        tags = listOf("photoPins operation")
+    }) {
+        get({
+            description = "get tagAlbum"
+            response {
+                HttpStatusCode.OK to {
+                    description = "success"
+                    body<TagAlbumDocument> { description = "tagAlbumDocument data" }
+                }
+                HttpStatusCode.NotFound to {
+                    description = "not found"
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "exception"
+                }
+            }
+        }) {
+            val memberId = call.request.queryParameters["memberId"]
+            if (memberId.isNullOrEmpty()) {
+                return@get call.respondText("memberId is required", status = HttpStatusCode.BadRequest)
+            }
+
+            val tagAlbum = photoPinQueries.getTagAlbumDocument(memberId)
+            call.respond(tagAlbum)
         }
     }
 }
