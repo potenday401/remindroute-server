@@ -6,19 +6,30 @@ import PhotoPinTable.longitude
 import PhotoPinTagIdsTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.potenday401.photopin.application.dto.TagAlbumDocument
-import org.potenday401.photopin.application.dto.TagAlbumListItemData
+import org.potenday401.photopin.application.dto.*
 import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.tag.domain.model.Tag
 import org.potenday401.tag.domain.model.TagRepository
+import org.potenday401.util.toEpochMilli
+import java.time.LocalDateTime
 import kotlin.streams.toList
+
+
+private data class TempDataForSorting(
+    val thumbnailPhotoUrl: String,
+    val photoPinCreatedDateTime: LocalDateTime,
+    val tagId: String,
+    val tagName: String,
+    val tagCount: Long,
+) {
+}
 
 class PhotoPinQueries(
     private val tagRepository: TagRepository,
 ) {
     fun getTagAlbumDocument(memberId: String): TagAlbumDocument {
-        // TODO: Fix this to use join query
+        // TODO: Fix this to use join query for performance
         val tags: List<Tag> = tagRepository.findAllByMemberId(memberId)
         val tagIdToCount: Map<String, Long> = getTagCount(memberId)
 
@@ -35,6 +46,66 @@ class PhotoPinQueries(
 
         return TagAlbumDocument(tagAlbumListItems)
     }
+
+    fun getTagAlbumDocumentOrderByCreatedAtDesc(memberId: String): TagAlbumDocument {
+        // TODO: Fix this to use join query for performance
+        val tags: List<Tag> = tagRepository.findAllByMemberId(memberId)
+        val tagIdToCount: Map<String, Long> = getTagCount(memberId)
+
+        val tagAlbumListItems = tags.stream().map { tag ->
+            val photoPin: PhotoPin? = getLatestPhotoPinOfTag(tagId = tag.id)
+
+            TempDataForSorting(
+                thumbnailPhotoUrl = photoPin?.photoUrl ?: "",
+                photoPinCreatedDateTime = photoPin?.createdAt ?: LocalDateTime.MIN,
+                tagId = tag.id,
+                tagName = tag.name,
+                tagCount = tagIdToCount.get(tag.id) ?: 0
+            )
+        }.sorted { i1, i2 -> i2.photoPinCreatedDateTime.compareTo(i1.photoPinCreatedDateTime)}
+            .map { data ->
+                TagAlbumListItemData(
+                    thumbnailPhotoUrl = data.thumbnailPhotoUrl,
+                    tagId = data.tagId,
+                    tagName = data.tagName,
+                    tagCount = data.tagCount
+                )
+            }.toList()
+
+        return TagAlbumDocument(tagAlbumListItems)
+
+    }
+
+    fun getMapAlbumDocument(memberId: String, start: LatLng, end: LatLng): MapAlbumDocument {
+        // TODO: Fix this to use join query for performance
+        val photoPins =  transaction {
+            PhotoPinTable.join(
+                PhotoPinTagIdsTable,
+                JoinType.LEFT,
+                additionalConstraint = { PhotoPinTable.id eq PhotoPinTagIdsTable.photoPinId })
+                .select { (PhotoPinTable.memberId eq memberId)
+                            (PhotoPinTable.latitude greaterEq start.latitude) and
+                            (PhotoPinTable.latitude lessEq end.latitude) and
+                            (PhotoPinTable.longitude greaterEq start.longitude) and
+                            (PhotoPinTable.longitude lessEq end.longitude)
+                }
+                .groupBy { it[PhotoPinTable.id] }
+                .map { (_, rows) ->
+                    val firstRow = rows.first()
+                    MapAlbumListItemData(
+                        photoPinId = firstRow[PhotoPinTable.id],
+                        photoUrl = firstRow[PhotoPinTable.photoUrl],
+                        latLng = LatLngData(
+                            latitude = firstRow[latitude],
+                            longitude = firstRow[longitude]
+                        ),
+                        createdAt = firstRow[PhotoPinTable.createdAt].toEpochMilli(),
+                    )
+                }
+        }
+        return MapAlbumDocument(photoPins)
+    }
+
 
     private fun getTagCount(memberId: String): MutableMap<String, Long> {
         val result: MutableMap<String, Long> = mutableMapOf()
