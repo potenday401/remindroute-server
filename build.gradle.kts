@@ -44,7 +44,7 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
     implementation("io.ktor:ktor-serialization-gson-jvm")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
-    implementation ("io.ktor:ktor-server-status-pages:$ktor_version")
+    implementation("io.ktor:ktor-server-status-pages:$ktor_version")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:0.30.1")
@@ -58,6 +58,11 @@ dependencies {
     implementation("com.sun.mail:javax.mail:1.6.2")
     implementation("io.ktor:ktor-server-auth:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
+    implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.1000"))
+    implementation("com.amazonaws:aws-java-sdk-s3")
+
+    implementation("com.typesafe:config:1.4.1")
+
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.mockito:mockito-core:5.9.0")
