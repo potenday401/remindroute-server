@@ -86,7 +86,7 @@ class ExposedPhotoPinRepositoryTest {
 
     @Test
     fun testFindAll() {
-        val photoPins = repository.findAll()
+        val photoPins = repository.findAll(mockPhotoPin1.memberId)
 
         assertTrue(photoPins.stream().anyMatch { photoPin ->
             photoPin.id == mockPhotoPin1.id && photoPin.memberId == mockPhotoPin1.memberId

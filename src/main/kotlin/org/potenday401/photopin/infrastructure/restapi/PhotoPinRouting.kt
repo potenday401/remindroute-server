@@ -48,6 +48,11 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
 
         get({
             description = "get photoPins"
+            request {
+                queryParameter<String>("memberId") {
+                    required = true
+                }
+            }
             response {
                 HttpStatusCode.OK to {
                     description = "success"
@@ -61,7 +66,11 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
                 }
             }
         }) {
-            val photoPins = photoPinAppService.getAllPhotoPins()
+            val memberId = call.request.queryParameters["memberId"]
+            if (memberId.isNullOrEmpty()) {
+                return@get call.respondText("memberId is required", status = HttpStatusCode.BadRequest)
+            }
+            val photoPins = photoPinAppService.getAllPhotoPins(memberId)
             call.respond(photoPins)
         }
 
