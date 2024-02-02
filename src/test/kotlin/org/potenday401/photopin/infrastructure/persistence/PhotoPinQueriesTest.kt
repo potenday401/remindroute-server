@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.tag.infrastructure.persistence.ExposedTagRepository
 import org.potenday401.tag.infrastructure.persistence.TagTable
 import java.time.LocalDateTime
@@ -43,8 +44,12 @@ class PhotoPinQueriesTest {
             repeat(repeatCount) { photoIndex ->
                 val photoPinId = "photoPinId_$photoIndex"
                 var photoPinDateTime = LocalDateTime.now().minusDays(1)
+                var photoPinLatitude = 37.7749
+                var photoPinLongitude = -122.4194
                 if(photoIndex == 4) {
                     photoPinDateTime = LocalDateTime.now()
+                    photoPinLatitude = 3.0
+                    photoPinLongitude = 5.0
                 }
 
                 PhotoPinTable.insert {
@@ -52,8 +57,8 @@ class PhotoPinQueriesTest {
                     it[memberId] = "test-member-id"
                     it[photoUrl] = "http://example.com/photo$photoIndex.jpg"
                     it[photoDateTime] = LocalDateTime.now().minusDays(photoIndex.toLong())
-                    it[latitude] = 37.7749
-                    it[longitude] = -122.4194
+                    it[latitude] = photoPinLatitude
+                    it[longitude] = photoPinLongitude
                     it[createdAt] = photoPinDateTime
                     it[modifiedAt] = photoPinDateTime
                 }
@@ -99,5 +104,13 @@ class PhotoPinQueriesTest {
 
         Assert.assertEquals(4, tagAlbumDocument.listItems.size)
         Assert.assertEquals(tagAlbumDocument.listItems[0].tagId, "tagId2")
+    }
+
+    @Test
+    fun getMapAlbumDocument() {
+        val mapAlbumDocument = queries.getMapAlbumDocument("test-member-id", LatLng(1.0,-1.0), LatLng(4.0, 6.0))
+
+        Assert.assertEquals(1, mapAlbumDocument.listItems.size)
+        Assert.assertEquals(mapAlbumDocument.listItems[0].photoPinId, "photoPinId_4")
     }
 }
