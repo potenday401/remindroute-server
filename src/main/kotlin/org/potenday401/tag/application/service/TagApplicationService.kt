@@ -19,12 +19,12 @@ class TagApplicationService(private val tagRepository: TagRepository) {
         }
     }
 
-    fun getAllTags(): List<TagData> {
-        return tagRepository.findAll().map { toTagData(it) }
+    fun getAllTags(memberId:String): List<TagData> {
+        return tagRepository.findAll(memberId).map { toTagData(it) }
     }
 
-    fun getAllTagsByNameIn(names: List<String>): List<TagData> {
-        return tagRepository.findAllByNameIn(names).map { toTagData(it) }
+    fun getAllTagsByNameIn(memberId:String, names: List<String>): List<TagData> {
+        return tagRepository.findAllByNameIn(memberId, names).map { toTagData(it) }
     }
 
     fun createTag(tagCreationData: TagCreationData) {
