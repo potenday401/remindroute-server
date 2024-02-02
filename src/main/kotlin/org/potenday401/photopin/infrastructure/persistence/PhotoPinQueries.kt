@@ -13,6 +13,8 @@ import org.potenday401.tag.domain.model.Tag
 import org.potenday401.tag.domain.model.TagRepository
 import org.potenday401.util.toEpochMilli
 import java.time.LocalDateTime
+import java.time.YearMonth
+import java.time.ZoneId
 import kotlin.streams.toList
 
 
@@ -62,7 +64,7 @@ class PhotoPinQueries(
                 tagName = tag.name,
                 tagCount = tagIdToCount.get(tag.id) ?: 0
             )
-        }.sorted { i1, i2 -> i2.photoPinCreatedDateTime.compareTo(i1.photoPinCreatedDateTime)}
+        }.sorted { i1, i2 -> i2.photoPinCreatedDateTime.compareTo(i1.photoPinCreatedDateTime) }
             .map { data ->
                 TagAlbumListItemData(
                     thumbnailPhotoUrl = data.thumbnailPhotoUrl,
@@ -73,18 +75,18 @@ class PhotoPinQueries(
             }.toList()
 
         return TagAlbumDocument(tagAlbumListItems)
-
     }
 
     fun getMapAlbumDocument(memberId: String, start: LatLng, end: LatLng): MapAlbumDocument {
         // TODO: Fix this to use join query for performance
-        val photoPins =  transaction {
+        val photoPins = transaction {
             PhotoPinTable.join(
                 PhotoPinTagIdsTable,
                 JoinType.LEFT,
                 additionalConstraint = { PhotoPinTable.id eq PhotoPinTagIdsTable.photoPinId })
-                .select { (PhotoPinTable.memberId eq memberId)
-                            (PhotoPinTable.latitude greaterEq start.latitude) and
+                .select {
+                    (PhotoPinTable.memberId eq memberId)
+                    (PhotoPinTable.latitude greaterEq start.latitude) and
                             (PhotoPinTable.latitude lessEq end.latitude) and
                             (PhotoPinTable.longitude greaterEq start.longitude) and
                             (PhotoPinTable.longitude lessEq end.longitude)
@@ -104,6 +106,41 @@ class PhotoPinQueries(
                 }
         }
         return MapAlbumDocument(photoPins)
+    }
+
+    fun getCalendarAlbumDocument(memberId: String, yearMonth: YearMonth): CalendarAlbumDocument {
+        // TODO: Fix this to use join query for performance
+        val startOfMonth = yearMonth.atDay(1).atStartOfDay()
+        val endOfMonth =
+            yearMonth.atEndOfMonth().atTime(23, 59, 59)
+
+        val photoPins = transaction {
+            PhotoPinTable.join(
+                PhotoPinTagIdsTable,
+                JoinType.LEFT,
+                additionalConstraint = { PhotoPinTable.id eq PhotoPinTagIdsTable.photoPinId })
+                .select { (PhotoPinTable.memberId eq memberId) and (PhotoPinTable.createdAt greaterEq startOfMonth) and (PhotoPinTable.createdAt lessEq endOfMonth) }
+
+                .groupBy { it[PhotoPinTable.id] }
+                .map { (_, rows) ->
+                    val firstRow = rows.first()
+
+                    CalendarAlbumItemData(
+                        photoPinId = firstRow[PhotoPinTable.id],
+                        photoUrl = firstRow[PhotoPinTable.photoUrl],
+                        date = firstRow[PhotoPinTable.createdAt].dayOfMonth,
+                        createdAt = firstRow[PhotoPinTable.createdAt].toEpochMilli()
+                    )
+                }
+        }
+
+        val dayOfMonthToItem: MutableMap<Int, CalendarAlbumItemData> = mutableMapOf()
+        val sortedPhotoPins = photoPins.sortedBy { it.createdAt }
+        for (sortedPhotoPin in sortedPhotoPins) {
+            dayOfMonthToItem.put(sortedPhotoPin.date, sortedPhotoPin)
+        }
+
+        return CalendarAlbumDocument(yearMonth.year, yearMonth.monthValue, dayOfMonthToItem)
     }
 
 

@@ -105,13 +105,13 @@ class ExposedPhotoPinRepository : PhotoPinRepository {
         }
     }
 
-    override fun findAll(): List<PhotoPin> {
+    override fun findAll(memberId: String): List<PhotoPin> {
         return transaction {
             PhotoPinTable.join(
                 PhotoPinTagIdsTable,
                 JoinType.LEFT,
                 additionalConstraint = { PhotoPinTable.id eq PhotoPinTagIdsTable.photoPinId })
-                .selectAll()
+                .select { (PhotoPinTable.memberId eq memberId)}
                 .groupBy { it[PhotoPinTable.id] }
                 .map { (_, rows) ->
                     val firstRow = rows.first()

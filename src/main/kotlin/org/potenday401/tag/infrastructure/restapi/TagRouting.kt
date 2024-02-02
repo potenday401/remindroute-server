@@ -45,6 +45,11 @@ fun Route.tagRouting(tagAppService: TagApplicationService) {
 
         get({
             description = "get tags"
+            request {
+                queryParameter<String>("memberId") {
+                    required = true
+                }
+            }
             response {
                 HttpStatusCode.OK to {
                     description = "success"
@@ -58,12 +63,21 @@ fun Route.tagRouting(tagAppService: TagApplicationService) {
                 }
             }
         }) {
-            val tags = tagAppService.getAllTags()
+            val memberId = call.request.queryParameters["memberId"]
+            if (memberId.isNullOrEmpty()) {
+                return@get call.respondText("memberId is required", status = HttpStatusCode.BadRequest)
+            }
+            val tags = tagAppService.getAllTags(memberId)
             call.respond(tags)
         }
 
         get("/by-name", {
             description = "get tags by name"
+            request {
+                queryParameter<String>("memberId") {
+                    required = true
+                }
+            }
             request {
                 queryParameter<String>("name") {
                     description = "tag name"
@@ -82,6 +96,11 @@ fun Route.tagRouting(tagAppService: TagApplicationService) {
                 }
             }
         }) {
+            val memberId = call.request.queryParameters["memberId"]
+            if (memberId.isNullOrEmpty()) {
+                return@get call.respondText("memberId is required", status = HttpStatusCode.BadRequest)
+            }
+
             val names = call.request.queryParameters.getAll("name")
             if (names.isNullOrEmpty()) {
                 return@get call.respondText(
@@ -90,7 +109,7 @@ fun Route.tagRouting(tagAppService: TagApplicationService) {
                 )
             }
 
-            val tags = tagAppService.getAllTagsByNameIn(names)
+            val tags = tagAppService.getAllTagsByNameIn(memberId, names)
             call.respond(tags)
         }
 
