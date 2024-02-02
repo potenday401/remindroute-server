@@ -12,13 +12,14 @@ import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.tag.domain.model.Tag
 import org.potenday401.tag.domain.model.TagRepository
+import java.time.LocalDateTime
 import kotlin.streams.toList
 
 class PhotoPinQueries(
     private val tagRepository: TagRepository,
 ) {
     fun getTagAlbumDocument(memberId: String): TagAlbumDocument {
-        // TODO: Fix this to use join query
+        // TODO: Fix this to use join query for performance
         val tags: List<Tag> = tagRepository.findAllByMemberId(memberId)
         val tagIdToCount: Map<String, Long> = getTagCount(memberId)
 
@@ -35,6 +36,45 @@ class PhotoPinQueries(
 
         return TagAlbumDocument(tagAlbumListItems)
     }
+
+    fun getTagAlbumDocumentOrderByCreatedAtDesc(memberId: String): TagAlbumDocument {
+        // TODO: Fix this to use join query for performance
+        val tags: List<Tag> = tagRepository.findAllByMemberId(memberId)
+        val tagIdToCount: Map<String, Long> = getTagCount(memberId)
+
+        val tagAlbumListItems = tags.stream().map { tag ->
+            val photoPin: PhotoPin? = getLatestPhotoPinOfTag(tagId = tag.id)
+
+            TempDataForSorting(
+                thumbnailPhotoUrl = photoPin?.photoUrl ?: "",
+                photoPinCreatedDateTime = photoPin?.createdAt ?: LocalDateTime.MIN,
+                tagId = tag.id,
+                tagName = tag.name,
+                tagCount = tagIdToCount.get(tag.id) ?: 0
+            )
+        }.sorted { i1, i2 -> i2.photoPinCreatedDateTime.compareTo(i1.photoPinCreatedDateTime)}
+            .map { data ->
+                TagAlbumListItemData(
+                    thumbnailPhotoUrl = data.thumbnailPhotoUrl,
+                    tagId = data.tagId,
+                    tagName = data.tagName,
+                    tagCount = data.tagCount
+                )
+            }.toList()
+
+        return TagAlbumDocument(tagAlbumListItems)
+
+    }
+
+    private data class TempDataForSorting(
+        val thumbnailPhotoUrl: String,
+        val photoPinCreatedDateTime: LocalDateTime,
+        val tagId: String,
+        val tagName: String,
+        val tagCount: Long,
+    ) {
+    }
+
 
     private fun getTagCount(memberId: String): MutableMap<String, Long> {
         val result: MutableMap<String, Long> = mutableMapOf()

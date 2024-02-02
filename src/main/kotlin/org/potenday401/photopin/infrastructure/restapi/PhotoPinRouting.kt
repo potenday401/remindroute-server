@@ -88,6 +88,15 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
     }) {
         get({
             description = "get tagAlbum"
+            request {
+                queryParameter<String>("memberId") {
+                    required = true
+                }
+                queryParameter<String>("sort") {
+                    required = false
+                    description = "sort=latest 로 설정 하면 가장 최근에 작성된 photoPin 에 등록된 테그 부터 차례로 정렬된 아이템을 되돌려 줍니다."
+                }
+            }
             response {
                 HttpStatusCode.OK to {
                     description = "success"
@@ -106,7 +115,13 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
                 return@get call.respondText("memberId is required", status = HttpStatusCode.BadRequest)
             }
 
-            val tagAlbum = photoPinQueries.getTagAlbumDocument(memberId)
+            val sort = call.request.queryParameters["sort"]
+            val tagAlbum = when (sort) {
+                "latest" -> photoPinQueries.getTagAlbumDocumentOrderByCreatedAtDesc(memberId)
+                null -> photoPinQueries.getTagAlbumDocument(memberId)
+                else -> return@get call.respondText("not supported sort value. use 'latest'", status = HttpStatusCode.BadRequest)
+            }
+
             call.respond(tagAlbum)
         }
     }

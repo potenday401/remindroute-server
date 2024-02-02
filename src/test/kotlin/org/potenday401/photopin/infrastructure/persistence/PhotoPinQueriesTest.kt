@@ -42,6 +42,11 @@ class PhotoPinQueriesTest {
             var repeatCount = 5
             repeat(repeatCount) { photoIndex ->
                 val photoPinId = "photoPinId_$photoIndex"
+                var photoPinDateTime = LocalDateTime.now().minusDays(1)
+                if(photoIndex == 4) {
+                    photoPinDateTime = LocalDateTime.now()
+                }
+
                 PhotoPinTable.insert {
                     it[id] = photoPinId
                     it[memberId] = "test-member-id"
@@ -49,8 +54,8 @@ class PhotoPinQueriesTest {
                     it[photoDateTime] = LocalDateTime.now().minusDays(photoIndex.toLong())
                     it[latitude] = 37.7749
                     it[longitude] = -122.4194
-                    it[createdAt] = LocalDateTime.now()
-                    it[modifiedAt] = LocalDateTime.now()
+                    it[createdAt] = photoPinDateTime
+                    it[modifiedAt] = photoPinDateTime
                 }
 
                 if (photoIndex == 0 || photoIndex == 1 || photoIndex == 2) {
@@ -86,5 +91,13 @@ class PhotoPinQueriesTest {
         Assert.assertEquals(tagAlbumDocument.listItems[0].tagCount, 3)
         Assert.assertEquals(tagAlbumDocument.listItems[1].tagCount, 2)
         Assert.assertEquals(tagAlbumDocument.listItems[2].tagCount, 1)
+    }
+
+    @Test
+    fun getTagAlbumDocumentOrderByCreatedAtDesc() {
+        val tagAlbumDocument = queries.getTagAlbumDocumentOrderByCreatedAtDesc("test-member-id")
+
+        Assert.assertEquals(4, tagAlbumDocument.listItems.size)
+        Assert.assertEquals(tagAlbumDocument.listItems[0].tagId, "tagId2")
     }
 }
