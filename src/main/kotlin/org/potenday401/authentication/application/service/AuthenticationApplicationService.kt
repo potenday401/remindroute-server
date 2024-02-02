@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.typesafe.config.ConfigFactory
+import org.potenday401.authentication.application.service.exception.InvalidTokenException
 import org.potenday401.authentication.domain.model.RefreshToken
 import org.potenday401.authentication.infrastructure.persistence.ExposedRefreshTokenRepository
 import java.time.Instant
@@ -38,5 +39,17 @@ class AuthenticationApplicationService(private val refreshTokenRepository: Expos
             refreshTokenRepository.create(RefreshToken(memberId, refreshToken, localDateTimeExpiresAt))
         }
         return TokenPair(accessToken, refreshToken)
+    }
+
+    fun getRefreshToken(refreshToken: String): RefreshToken {
+        return refreshTokenRepository.findByRefreshToken(refreshToken) ?: throw InvalidTokenException()
+    }
+
+    fun updateRefreshToken(oldRefreshToken: String, newRefreshToken: String, newExpiresAt: LocalDateTime) {
+        return refreshTokenRepository.update(oldRefreshToken, newRefreshToken, newExpiresAt)
+    }
+
+    fun deleteRefreshTokenByMemberId(memberId: Int) {
+        refreshTokenRepository.deleteByMemberId(memberId)
     }
 }

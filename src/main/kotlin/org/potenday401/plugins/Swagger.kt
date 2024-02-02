@@ -1,6 +1,8 @@
 package org.potenday401.plugins
 
 import io.github.smiley4.ktorswaggerui.SwaggerUI
+import io.github.smiley4.ktorswaggerui.data.AuthScheme
+import io.github.smiley4.ktorswaggerui.data.AuthType
 import io.github.smiley4.ktorswaggerui.data.SwaggerUiSyntaxHighlight
 import io.ktor.server.application.*
 
@@ -17,6 +19,11 @@ fun Application.configureSwagger() {
             title = "popin API"
             version = "latest"
             description = "popin api"
+        }
+        securityScheme("auth-jwt-scheme") {
+            type = AuthType.HTTP
+            bearerFormat = "jwt"
+            scheme = AuthScheme.BEARER
         }
     }
 }
