@@ -10,6 +10,7 @@ import org.potenday401.member.application.service.MemberApplicationService
 import org.potenday401.member.infrastructure.persistence.ExposedEmailAuthenticationRepository
 import org.potenday401.member.infrastructure.persistence.ExposedMemberRepository
 import org.potenday401.photopin.application.service.PhotoPinApplicationService
+import org.potenday401.photopin.infrastructure.persistence.PhotoPinQueries
 import org.potenday401.plugins.*
 import org.potenday401.tag.application.service.TagApplicationService
 import org.potenday401.tag.infrastructure.persistence.ExposedTagRepository
@@ -44,12 +45,13 @@ fun Application.module() {
         s3UserAccessSecret)
     val photoPinRepository = ExposedPhotoPinRepository()
     val photoPinAppService = PhotoPinApplicationService(photoPinRepository, fileStorageService)
+    val photoPinQueries = PhotoPinQueries(tagRepository)
 
     configureSecurity()
     configureHTTP()
     configureSerialization()
     configureDatabases()
     configureTemplating()
-    configureRouting(tagAppService, memberAppService, photoPinAppService)
+    configureRouting(tagAppService, memberAppService, photoPinAppService, photoPinQueries)
     configureSwagger()
 }

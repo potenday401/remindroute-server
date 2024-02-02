@@ -6,3 +6,10 @@ CREATE TABLE IF NOT EXISTS `tag` (
   `modified_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `tag` (`id`, `member_id`, `name`, `created_at`, `modified_at`) VALUES
+('tag1', 'member1', '땅', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+('tag2', 'member1', '불', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+('tag3', 'member1', '바람','2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+('tag4', 'member1', '물', '2024-01-01 00:00:00', '2024-01-01 00:00:00'),
+('tag5', 'member1', '마음', '2024-01-01 00:00:00', '2024-01-01 00:00:00');

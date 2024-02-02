@@ -1,11 +1,14 @@
 import PhotoPinTable.latitude
 import PhotoPinTable.longitude
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.photopin.domain.model.PhotoPinRepository
+import org.potenday401.tag.domain.model.Tag
+import org.potenday401.tag.infrastructure.persistence.TagTable
 
 
 object PhotoPinTagIdsTable : Table("photo_pin_tag_ids") {
@@ -72,6 +75,33 @@ class ExposedPhotoPinRepository : PhotoPinRepository {
                     modifiedAt = row[PhotoPinTable.modifiedAt]
                 )
             }
+        }
+    }
+
+    override fun findAllByTagId(tagId: String): List<PhotoPin> {
+        return transaction {
+            PhotoPinTable.join(
+                PhotoPinTagIdsTable,
+                JoinType.LEFT,
+                additionalConstraint = { PhotoPinTable.id eq PhotoPinTagIdsTable.photoPinId })
+                .select { PhotoPinTagIdsTable.tagId eq tagId }
+                .groupBy { it[PhotoPinTable.id] }
+                .map { (_, rows) ->
+                    val firstRow = rows.first()
+                    PhotoPin(
+                        id = firstRow[PhotoPinTable.id],
+                        memberId = firstRow[PhotoPinTable.memberId],
+                        tagIds = rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }.distinct(),
+                        photoUrl = firstRow[PhotoPinTable.photoUrl],
+                        photoDateTime = firstRow[PhotoPinTable.photoDateTime],
+                        latLng = LatLng(
+                            latitude = firstRow[latitude],
+                            longitude = firstRow[longitude]
+                        ),
+                        createdAt = firstRow[PhotoPinTable.createdAt],
+                        modifiedAt = firstRow[PhotoPinTable.modifiedAt]
+                    )
+                }
         }
     }
 

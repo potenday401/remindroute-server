@@ -18,12 +18,14 @@ import org.potenday401.photopin.application.dto.PhotoPinCreationData
 import org.potenday401.photopin.application.service.PhotoPinApplicationService
 import org.potenday401.photopin.application.service.PhotoPinDataConverter
 import org.potenday401.photopin.domain.model.mockPhotoPin1
+import org.potenday401.photopin.infrastructure.persistence.PhotoPinQueries
 import java.nio.charset.Charset
 
 
 class PhotoPinRoutingTest {
 
     private val photoPinAppService = mock<PhotoPinApplicationService>()
+    private val photoPinQueries = mock<PhotoPinQueries>()
 
     @Test
     fun testGetById() = testApplication {
@@ -33,7 +35,7 @@ class PhotoPinRoutingTest {
             }
 
             routing {
-                photoPinRouting(photoPinAppService)
+                photoPinRouting(photoPinAppService, photoPinQueries)
             }
         }
 
@@ -55,7 +57,7 @@ class PhotoPinRoutingTest {
             }
 
             routing {
-                photoPinRouting(photoPinAppService)
+                photoPinRouting(photoPinAppService, photoPinQueries)
             }
         }
 
