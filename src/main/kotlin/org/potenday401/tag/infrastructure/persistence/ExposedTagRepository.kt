@@ -47,6 +47,20 @@ class ExposedTagRepository : TagRepository {
         }
     }
 
+    override fun findAllByMemberId(memberId: String): List<Tag> {
+        return transaction {
+            TagTable.select { TagTable.memberId eq memberId }.map { row ->
+                Tag(
+                    id = row[TagTable.id],
+                    name = row[TagTable.name],
+                    memberId = row[TagTable.memberId],
+                    createdAt = row[TagTable.createdAt],
+                    modifiedAt = row[TagTable.modifiedAt]
+                )
+            }
+        }
+    }
+
     override fun findAll(): List<Tag> {
         return transaction {
             TagTable.selectAll().map { row ->
