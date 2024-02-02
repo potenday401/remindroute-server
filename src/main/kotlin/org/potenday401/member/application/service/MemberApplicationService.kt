@@ -78,6 +78,10 @@ class MemberApplicationService(
         memberRepository.create(member)
     }
 
+    fun getMemberByEmail(email: String): Member? {
+        return memberRepository.findByEmail(email)
+    }
+
     fun resetPassword() {
         TODO("비밀번호 재설정. 인증 받고 -> 재설정 필요")
     }

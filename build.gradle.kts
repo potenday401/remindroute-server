@@ -56,6 +56,8 @@ dependencies {
     implementation("mysql:mysql-connector-java:8.0.20")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("com.sun.mail:javax.mail:1.6.2")
+    implementation("io.ktor:ktor-server-auth:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.mockito:mockito-core:5.9.0")
