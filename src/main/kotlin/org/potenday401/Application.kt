@@ -5,6 +5,8 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import org.potenday401.authentication.application.service.AuthenticationApplicationService
+import org.potenday401.authentication.infrastructure.persistence.ExposedRefreshTokenRepository
 import org.potenday401.common.infrastructure.filestorage.AwsS3FileStorageService
 import org.potenday401.member.application.service.MemberApplicationService
 import org.potenday401.member.infrastructure.persistence.ExposedEmailAuthenticationRepository
@@ -27,7 +29,9 @@ fun main() {
 fun Application.module() {
     val memberRepository = ExposedMemberRepository()
     val emailAuthenticationRepository = ExposedEmailAuthenticationRepository()
+    val refreshTokenRepository = ExposedRefreshTokenRepository()
     val memberAppService = MemberApplicationService(memberRepository, emailAuthenticationRepository)
+    val authAppService = AuthenticationApplicationService(refreshTokenRepository)
 
     val tagRepository = ExposedTagRepository()
     val tagAppService = TagApplicationService(tagRepository)
@@ -52,6 +56,6 @@ fun Application.module() {
     configureSerialization()
     configureDatabases()
     configureTemplating()
-    configureRouting(tagAppService, memberAppService, photoPinAppService, photoPinQueries)
+    configureRouting(tagAppService, memberAppService, photoPinAppService, photoPinQueries, authAppService)
     configureSwagger()
 }

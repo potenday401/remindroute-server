@@ -56,7 +56,8 @@ dependencies {
     implementation("mysql:mysql-connector-java:8.0.20")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("com.sun.mail:javax.mail:1.6.2")
-
+    implementation("io.ktor:ktor-server-auth:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
     implementation(platform("com.amazonaws:aws-java-sdk-bom:1.11.1000"))
     implementation("com.amazonaws:aws-java-sdk-s3")
 
