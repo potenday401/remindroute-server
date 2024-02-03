@@ -6,6 +6,7 @@ import org.potenday401.common.domain.model.FileStorageService
 import org.potenday401.photopin.application.dto.LatLngData
 import org.potenday401.photopin.application.dto.PhotoPinCreationData
 import org.potenday401.photopin.application.dto.PhotoPinData
+import org.potenday401.photopin.application.dto.PhotoPinMutationData
 import org.potenday401.photopin.application.service.PhotoPinDataConverter.toPhotoPinData
 import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.domain.model.PhotoPin
@@ -34,7 +35,6 @@ class PhotoPinApplicationService(
 
     fun createPhotoPin(photoPinCreationData: PhotoPinCreationData) {
         // TODO: add tagId validation
-        // photoPinCreationData
 
         val file = createFile(
             photoPinCreationData.photoFileBase64Payload,
@@ -54,6 +54,32 @@ class PhotoPinApplicationService(
             latLng
         )
         photoPinRepository.create(photoPin)
+    }
+
+    fun updatePhotoPin(photoPinMutationData: PhotoPinMutationData) {
+        // TODO: add tagId validation
+
+        val photoPin = photoPinRepository.findById(photoPinMutationData.photoPinId)
+            ?: throw Exception("photo pin not found")
+
+        val latLng =
+            LatLng(photoPinMutationData.latLng.latitude, photoPinMutationData.latLng.longitude)
+        var photoUrl = photoPin.photoUrl
+
+        if (photoPinMutationData.photoFileBase64Payload != null && photoPinMutationData.photoFileExt != null) {
+            val file = createFile(
+                photoPinMutationData.photoFileBase64Payload,
+                photoPinMutationData.photoFileExt
+            )
+            val dir = "images/${photoPin.memberId}"
+            photoUrl = fileStorageService.storeFile(dir, file).toExternalForm()
+        }
+
+        photoPin.photoUrl = photoUrl
+        photoPin.tagIds = photoPinMutationData.tagIds
+        photoPin.latLng = latLng
+
+        photoPinRepository.update(photoPin)
     }
 
     private fun createFile(base64Payload: String, ext: String): File {

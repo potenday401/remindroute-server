@@ -11,6 +11,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.potenday401.photopin.domain.model.*
+import java.time.LocalDateTime
 import java.util.*
 
 class ExposedPhotoPinRepositoryTest {
@@ -69,6 +70,32 @@ class ExposedPhotoPinRepositoryTest {
         assertEquals(mockPhotoPin1.latLng.longitude, foundPhotoPin?.latLng?.longitude)
         assertEquals(mockPhotoPin1.tagIds[0], foundPhotoPin?.tagIds?.get(0) ?: "")
         assertEquals(mockPhotoPin1.tagIds[1], foundPhotoPin?.tagIds?.get(1) ?: "")
+    }
+
+    @Test
+    fun testUpdate() {
+        transaction {
+            // given
+            val foundPhotoPin = repository.findById(mockPhotoPin1.id) ?: throw Exception("not-found")
+
+            val newLatLng =  LatLng(1.0,2.0)
+            val newTagIds = mutableListOf("test-tag-id-4","test-tag-id-5")
+
+            foundPhotoPin.tagIds = newTagIds
+            foundPhotoPin.latLng = newLatLng
+
+            // when
+            repository.update(foundPhotoPin)
+            val foundAgainPhotoPin = repository.findById(mockPhotoPin1.id) ?: throw Exception("not-found")
+
+            // then
+            assertEquals(foundAgainPhotoPin.id, foundPhotoPin.id)
+            assertEquals(foundAgainPhotoPin.memberId, foundPhotoPin.memberId)
+            assertEquals(foundAgainPhotoPin.latLng.latitude.toString(), newLatLng.latitude.toString())
+            assertEquals(foundAgainPhotoPin.latLng.longitude.toString(), newLatLng.longitude.toString())
+            assertEquals(foundAgainPhotoPin.tagIds[0], newTagIds[0])
+            assertEquals(foundAgainPhotoPin.tagIds[1], newTagIds[1])
+        }
     }
 
     @Test

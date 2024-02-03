@@ -5,10 +5,10 @@ import java.time.LocalDateTime
 class PhotoPin(
     val id: String,
     val memberId: String,
-    val tagIds:List<String>,
-    val photoUrl: String,
-    val photoDateTime: LocalDateTime,
-    val latLng: LatLng,
+    var tagIds:List<String>,
+    var photoUrl: String,
+    var photoDateTime: LocalDateTime,
+    var latLng: LatLng,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val modifiedAt: LocalDateTime = LocalDateTime.now()
 ) {

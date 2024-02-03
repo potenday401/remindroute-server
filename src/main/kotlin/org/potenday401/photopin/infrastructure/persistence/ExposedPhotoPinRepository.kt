@@ -1,6 +1,7 @@
 import PhotoPinTable.latitude
 import PhotoPinTable.longitude
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -9,6 +10,7 @@ import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.photopin.domain.model.PhotoPinRepository
 import org.potenday401.tag.domain.model.Tag
 import org.potenday401.tag.infrastructure.persistence.TagTable
+import java.time.LocalDateTime
 
 
 object PhotoPinTagIdsTable : Table("photo_pin_tag_ids") {
@@ -43,6 +45,28 @@ class ExposedPhotoPinRepository : PhotoPinRepository {
                 it[createdAt] = photoPin.createdAt
                 it[modifiedAt] = photoPin.modifiedAt
             }
+
+            photoPin.tagIds.forEach { tagId ->
+                PhotoPinTagIdsTable.insert {
+                    it[photoPinId] = photoPin.id
+                    it[this.tagId] = tagId
+                }
+            }
+        }
+    }
+
+    override fun update(photoPin: PhotoPin) {
+        transaction {
+            PhotoPinTable.update({ PhotoPinTable.id eq photoPin.id }) {
+                it[memberId] = photoPin.memberId
+                it[photoUrl] = photoPin.photoUrl
+                it[photoDateTime] = photoPin.photoDateTime
+                it[latitude] = photoPin.latLng.latitude
+                it[longitude] = photoPin.latLng.longitude
+                it[modifiedAt] = LocalDateTime.now()
+            }
+
+            PhotoPinTagIdsTable.deleteWhere { PhotoPinTagIdsTable.photoPinId eq photoPin.id }
 
             photoPin.tagIds.forEach { tagId ->
                 PhotoPinTagIdsTable.insert {
