@@ -107,6 +107,8 @@ object PhotoPinDataConverter {
             photoUrl = photoPin.photoUrl,
             photoDateTime = photoPin.photoDateTime.toEpochMilli(),
             latLng = toLatLngData(photoPin.latLng),
+            locality = photoPin.locality,
+            subLocality = photoPin.subLocality,
             createdAt = photoPin.createdAt.toEpochMilli(),
             modifiedAt = photoPin.modifiedAt.toEpochMilli()
         )
