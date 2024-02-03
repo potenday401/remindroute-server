@@ -85,7 +85,9 @@ class PhotoPinApplicationService(
             photoPinContentMutationData.tagIds,
             photoUrl,
             photoPinContentMutationData.photoDateTime.toLocalDateTime(),
-            latLng
+            latLng,
+            photoPinContentMutationData.locality,
+            photoPinContentMutationData.subLocality
         )
         photoPinRepository.update(photoPin)
     }

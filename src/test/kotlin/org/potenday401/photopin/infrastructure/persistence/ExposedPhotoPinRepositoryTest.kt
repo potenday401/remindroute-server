@@ -63,7 +63,7 @@ class ExposedPhotoPinRepositoryTest {
         foundPhotoPin.tagIds = newTagIds
         foundPhotoPin.latLng = newLatLng
 
-        foundPhotoPin.changeContent(newTagIds, "newPhotoUrl", LocalDateTime.of(2024,1,12,23,55), newLatLng)
+        foundPhotoPin.changeContent(newTagIds, "newPhotoUrl", LocalDateTime.of(2024,1,12,23,55), newLatLng, "","")
 
         // when
         repository.update(foundPhotoPin)
@@ -77,6 +77,8 @@ class ExposedPhotoPinRepositoryTest {
         assertEquals(foundAgainPhotoPin.tagIds[0], newTagIds[0])
         assertEquals(foundAgainPhotoPin.tagIds[1], newTagIds[1])
         assertEquals(foundAgainPhotoPin.photoUrl, "newPhotoUrl")
+        assertEquals(foundAgainPhotoPin.locality, "")
+        assertEquals(foundAgainPhotoPin.subLocality, "")
     }
 
     @Test

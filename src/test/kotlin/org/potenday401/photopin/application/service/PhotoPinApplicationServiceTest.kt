@@ -58,7 +58,7 @@ class PhotoPinApplicationServiceTest {
         `when`(photoPinRepository.findById(mockPhotoPin1.id)).thenReturn(mockPhotoPin1)
 
         val tagIds = listOf("tagId1","tagId2")
-        val photoPinContentMutationData = PhotoPinContentMutationData(mockPhotoPin1.id, tagIds, 1,null, null, LatLngData(1.0,2.0))
+        val photoPinContentMutationData = PhotoPinContentMutationData(mockPhotoPin1.id, tagIds, 1,null, null, LatLngData(1.0,2.0), "", "")
         photoPinApplicationService.changePhotoPinContent(photoPinContentMutationData)
 
         verify(photoPinRepository).update(mockPhotoPin1)

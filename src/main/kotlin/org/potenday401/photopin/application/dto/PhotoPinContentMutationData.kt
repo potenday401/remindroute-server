@@ -9,6 +9,8 @@ data class PhotoPinContentMutationData(
     val photoDateTime: Long,
     val photoFileBase64Payload: String?,
     val photoFileExt: String?,
-    val latLng: LatLngData
+    val latLng: LatLngData,
+    val locality: String,
+    val subLocality: String
 ) {
 }

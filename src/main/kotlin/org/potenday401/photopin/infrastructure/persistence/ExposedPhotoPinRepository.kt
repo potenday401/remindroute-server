@@ -1,18 +1,10 @@
-import PhotoPinTable.latitude
-import PhotoPinTable.locality
-import PhotoPinTable.longitude
-import PhotoPinTable.subLocality
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.photopin.domain.model.PhotoPinRepository
 import org.potenday401.photopin.infrastructure.persistence.toPhotoPin
-import org.potenday401.tag.domain.model.Tag
-import org.potenday401.tag.infrastructure.persistence.TagTable
 import java.time.LocalDateTime
 
 
@@ -109,7 +101,8 @@ class ExposedPhotoPinRepository : PhotoPinRepository {
                 .groupBy { it[PhotoPinTable.id] }
                 .map { (_, rows) ->
                     val firstRow = rows.first()
-                    firstRow.toPhotoPin(rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }.distinct())
+                    firstRow.toPhotoPin(rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }
+                        .distinct())
                 }
         }
     }
@@ -120,11 +113,12 @@ class ExposedPhotoPinRepository : PhotoPinRepository {
                 PhotoPinTagIdsTable,
                 JoinType.LEFT,
                 additionalConstraint = { PhotoPinTable.id eq PhotoPinTagIdsTable.photoPinId })
-                .select { (PhotoPinTable.memberId eq memberId)}
+                .select { (PhotoPinTable.memberId eq memberId) }
                 .groupBy { it[PhotoPinTable.id] }
                 .map { (_, rows) ->
                     val firstRow = rows.first()
-                    firstRow.toPhotoPin(rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }.distinct())
+                    firstRow.toPhotoPin(rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }
+                        .distinct())
                 }
         }
     }
