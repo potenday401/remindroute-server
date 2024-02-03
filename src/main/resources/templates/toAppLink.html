@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta property="og:type" content="website">
+    <meta property="og:url" th:content="${here}">
+    <meta property="og:title" content="Welcome to PinPong">
+    <meta property="og:image" th:content="${ogImgUrl}">
+    <meta property="og:description" content="사진 한 장으로 위치와 기분을 임팩트 있게 기록해요!">
+    <meta property="og:site_name" content="PINPONG:핀퐁">
+    <meta property="og:locale" content="ko_KR">
+    <title>핀퐁:사진 한 장으로 위치와 기분을 임팩트 있게 기록해요!</title>
+</head>
+<body>
+    <input type="hidden" id="deepLink" th:value="${deepLink}" />
+
+    <script>
+        let deepLinkValue = document.getElementById('deepLink').value;
+        window.location.href = deepLinkValue;
+    </script>
+</body>
+</html>

@@ -14,6 +14,8 @@ import org.potenday401.member.infrastructure.persistence.ExposedMemberRepository
 import org.potenday401.photopin.application.service.PhotoPinApplicationService
 import org.potenday401.photopin.infrastructure.persistence.PhotoPinQueries
 import org.potenday401.plugins.*
+import org.potenday401.sharing.application.service.ShareLinkApplicationService
+import org.potenday401.sharing.infrastructure.persistence.ExposedShareLinkRepository
 import org.potenday401.tag.application.service.TagApplicationService
 import org.potenday401.tag.infrastructure.persistence.ExposedTagRepository
 
@@ -30,6 +32,7 @@ fun Application.module() {
     val memberRepository = ExposedMemberRepository()
     val emailAuthenticationRepository = ExposedEmailAuthenticationRepository()
     val refreshTokenRepository = ExposedRefreshTokenRepository()
+    val shareLinkRepository = ExposedShareLinkRepository()
     val memberAppService = MemberApplicationService(memberRepository, emailAuthenticationRepository)
     val authAppService = AuthenticationApplicationService(refreshTokenRepository)
 
@@ -50,13 +53,15 @@ fun Application.module() {
     val photoPinRepository = ExposedPhotoPinRepository()
     val photoPinAppService = PhotoPinApplicationService(photoPinRepository, fileStorageService)
     val photoPinQueries = PhotoPinQueries(tagRepository)
+    val shareLinkAppService = ShareLinkApplicationService(fileStorageService, shareLinkRepository)
+
 
     configureSecurity()
     configureHTTP()
     configureSerialization()
     configureDatabases()
     configureTemplating()
-    configureRouting(tagAppService, memberAppService, photoPinAppService, photoPinQueries, authAppService)
+    configureRouting(tagAppService, memberAppService, photoPinAppService, photoPinQueries, authAppService, shareLinkAppService)
     configureSwagger()
     configureStatusPages()
 }
