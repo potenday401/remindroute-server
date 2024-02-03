@@ -11,6 +11,8 @@ import org.potenday401.member.infrastructure.restapi.memberRouting
 import org.potenday401.photopin.application.service.PhotoPinApplicationService
 import org.potenday401.photopin.infrastructure.persistence.PhotoPinQueries
 import org.potenday401.photopin.infrastructure.restapi.photoPinRouting
+import org.potenday401.sharing.application.service.ShareLinkApplicationService
+import org.potenday401.sharing.infrastructure.restapi.SharingRouting
 import org.potenday401.tag.application.service.TagApplicationService
 import org.potenday401.tag.infrastructure.restapi.tagRouting
 
@@ -18,7 +20,8 @@ fun Application.configureRouting(tagAppService: TagApplicationService,
                                  memberAppService: MemberApplicationService,
                                  photoPinAppService: PhotoPinApplicationService,
                                  photoPinQueries: PhotoPinQueries,
-                                 authAppService: AuthenticationApplicationService) {
+                                 authAppService: AuthenticationApplicationService,
+                                 shareLinkApplicationService: ShareLinkApplicationService) {
 
     install(Resources)
     routing {
@@ -30,5 +33,6 @@ fun Application.configureRouting(tagAppService: TagApplicationService,
         memberRouting(memberAppService)
         AuthenticationRouting(authAppService, memberAppService)
         photoPinRouting(photoPinAppService, photoPinQueries)
+        SharingRouting(shareLinkApplicationService)
     }
 }
