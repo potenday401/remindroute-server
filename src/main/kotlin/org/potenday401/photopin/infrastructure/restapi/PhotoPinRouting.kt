@@ -14,7 +14,9 @@ import org.potenday401.photopin.application.dto.*
 import org.potenday401.photopin.application.service.PhotoPinApplicationService
 import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.infrastructure.persistence.PhotoPinQueries
+import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
 fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoPinQueries: PhotoPinQueries) {
     route("/photo-pins", {
@@ -283,6 +285,65 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
             val calendarAlbum = photoPinQueries.getCalendarAlbumDocument(memberId, YearMonth.of(year, month))
 
             call.respond(calendarAlbum)
+        }
+    }
+
+    route("/album", {
+        tags = listOf("photoPins album")
+    }) {
+        get({
+            description = "get album"
+            request {
+                queryParameter<String>("memberId") {
+                    required = true
+                }
+                queryParameter<String>("tagId") {
+                    required = false
+                    description = "tagId"
+                }
+                queryParameter<String>("date") {
+                    required = false
+                    description = "date, format) 2024-01-23"
+                }
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "success"
+                    body<AlbumListItemData> { description = "AlbumDocument data" }
+                }
+                HttpStatusCode.NotFound to {
+                    description = "not found"
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "exception"
+                }
+            }
+        }) {
+            val memberId = call.request.queryParameters["memberId"]
+            if (memberId.isNullOrEmpty()) {
+                return@get call.respondText("memberId is required", status = HttpStatusCode.BadRequest)
+            }
+
+            val tagId = call.request.queryParameters["tagId"]
+            val date = call.request.queryParameters["date"]
+
+            if (tagId != null && date !=null) {
+                return@get call.respondText("tagId, date 쿼리를 동시에 사용할 수 없습니다.", status = HttpStatusCode.BadRequest)
+            }
+
+            if (tagId == null && date ==null) {
+                return@get call.respondText("tagId, date 둘중 하나의 쿼리를 설정해 주세요.", status = HttpStatusCode.BadRequest)
+            }
+
+            val album = when {
+                tagId != null -> photoPinQueries.getAlbumDocumentOfTag(memberId, tagId)
+                date != null -> {
+                    val typedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                    photoPinQueries.getAlbumDocumentOfDate(memberId, typedDate)
+                }
+                else -> AlbumDocument(listOf()) // not happen
+            }
+            call.respond(album)
         }
     }
 }

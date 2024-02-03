@@ -4,6 +4,7 @@ import PhotoPinTable
 import PhotoPinTable.latitude
 import PhotoPinTable.longitude
 import PhotoPinTagIdsTable
+import PhotoPinTagIdsTable.tagId
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.potenday401.photopin.application.dto.*
@@ -12,9 +13,9 @@ import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.tag.domain.model.Tag
 import org.potenday401.tag.domain.model.TagRepository
 import org.potenday401.util.toEpochMilli
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
-import java.time.ZoneId
 import kotlin.streams.toList
 
 
@@ -27,11 +28,69 @@ private data class TempDataForSorting(
 ) {
 }
 
+
+// TODO: Fix this class's query methods to use join query for performance
+// TODO: Add paging feature
 class PhotoPinQueries(
     private val tagRepository: TagRepository,
 ) {
+    fun getAlbumDocumentOfDate(memberId: String, date: LocalDate): AlbumDocument {
+        val startOfDay: LocalDateTime = date.atStartOfDay()
+        val startOfNextDay: LocalDateTime = date.plusDays(1).atStartOfDay()
+
+        val listItems = transaction {
+            PhotoPinTable
+                .select {
+                    (PhotoPinTable.memberId greaterEq memberId) and
+                            (PhotoPinTable.createdAt greaterEq startOfDay) and
+                            (PhotoPinTable.createdAt less startOfNextDay)
+                }
+                .groupBy { it[PhotoPinTable.id] }
+                .map { (_, rows) ->
+                    val firstRow = rows.first()
+                    AlbumListItemData(
+                        photoPinId = firstRow[PhotoPinTable.id],
+                        photoUrl = firstRow[PhotoPinTable.photoUrl],
+                        latLng = LatLngData(
+                            firstRow[PhotoPinTable.latitude],
+                            firstRow[PhotoPinTable.longitude]
+                        ),
+                        createdAt = firstRow[PhotoPinTable.createdAt].toEpochMilli()
+                    )
+                }
+        }
+        return AlbumDocument(listItems)
+    }
+
+    fun getAlbumDocumentOfTag(memberId: String, tagId:String): AlbumDocument {
+        val listItems = transaction {
+            PhotoPinTable.join(
+                PhotoPinTagIdsTable,
+                JoinType.LEFT,
+                additionalConstraint = { PhotoPinTable.id eq PhotoPinTagIdsTable.photoPinId })
+                .select {
+                    (PhotoPinTable.memberId greaterEq memberId) and
+                            (PhotoPinTagIdsTable.tagId eq tagId)
+                }
+                .orderBy(PhotoPinTable.createdAt to SortOrder.DESC)
+                .groupBy { it[PhotoPinTable.id] }
+                .map { (_, rows) ->
+                    val firstRow = rows.first()
+                    AlbumListItemData(
+                        photoPinId = firstRow[PhotoPinTable.id],
+                        photoUrl = firstRow[PhotoPinTable.photoUrl],
+                        latLng = LatLngData(
+                            firstRow[PhotoPinTable.latitude],
+                            firstRow[PhotoPinTable.longitude]
+                        ),
+                        createdAt = firstRow[PhotoPinTable.createdAt].toEpochMilli()
+                    )
+                }
+        }
+        return AlbumDocument(listItems)
+    }
+
     fun getTagAlbumDocument(memberId: String): TagAlbumDocument {
-        // TODO: Fix this to use join query for performance
         val tags: List<Tag> = tagRepository.findAllByMemberId(memberId)
         val tagIdToCount: Map<String, Long> = getTagCount(memberId)
 
@@ -50,7 +109,6 @@ class PhotoPinQueries(
     }
 
     fun getTagAlbumDocumentOrderByCreatedAtDesc(memberId: String): TagAlbumDocument {
-        // TODO: Fix this to use join query for performance
         val tags: List<Tag> = tagRepository.findAllByMemberId(memberId)
         val tagIdToCount: Map<String, Long> = getTagCount(memberId)
 
@@ -78,7 +136,6 @@ class PhotoPinQueries(
     }
 
     fun getMapAlbumDocument(memberId: String, start: LatLng, end: LatLng): MapAlbumDocument {
-        // TODO: Fix this to use join query for performance
         val photoPins = transaction {
             PhotoPinTable.join(
                 PhotoPinTagIdsTable,
@@ -109,7 +166,6 @@ class PhotoPinQueries(
     }
 
     fun getCalendarAlbumDocument(memberId: String, yearMonth: YearMonth): CalendarAlbumDocument {
-        // TODO: Fix this to use join query for performance
         val startOfMonth = yearMonth.atDay(1).atStartOfDay()
         val endOfMonth =
             yearMonth.atEndOfMonth().atTime(23, 59, 59)
@@ -181,7 +237,8 @@ class PhotoPinQueries(
                 .groupBy { it[PhotoPinTable.id] }
                 .map { (_, rows) ->
                     val firstRow = rows.first()
-                    firstRow.toPhotoPin(rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }.distinct())
+                    firstRow.toPhotoPin(rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }
+                        .distinct())
                 }
                 .singleOrNull()
 

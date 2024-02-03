@@ -13,6 +13,7 @@ import org.potenday401.photopin.domain.model.*
 import org.potenday401.tag.domain.model.*
 import org.potenday401.tag.infrastructure.persistence.ExposedTagRepository
 import org.potenday401.tag.infrastructure.persistence.TagTable
+import java.time.LocalDate
 import java.time.YearMonth
 import java.util.*
 
@@ -78,7 +79,8 @@ class PhotoPinQueriesTest {
     @Test
     fun getMapAlbumDocument() {
         val mockPhotoPin2 = createMockPhotoPin2()
-        val mapAlbumDocument = queries.getMapAlbumDocument("test-member-id-1", LatLng(1.0,-1.0), LatLng(4.0, 6.0))
+        val mapAlbumDocument =
+            queries.getMapAlbumDocument("test-member-id-1", LatLng(1.0, -1.0), LatLng(4.0, 6.0))
 
         Assert.assertEquals(1, mapAlbumDocument.listItems.size)
         Assert.assertEquals(mockPhotoPin2.id, mapAlbumDocument.listItems[0].photoPinId)
@@ -87,15 +89,36 @@ class PhotoPinQueriesTest {
     @Test
     fun getCalendarAlbumDocument() {
         val mockPhotoPin3 = createMockPhotoPin3()
-        val calendarAlbumDocument = queries.getCalendarAlbumDocument("test-member-id-1",YearMonth.of(2023, 12))
+        val calendarAlbumDocument =
+            queries.getCalendarAlbumDocument("test-member-id-1", YearMonth.of(2023, 12))
 
         Assert.assertEquals(2, calendarAlbumDocument.dayOfMonthToItem.size)
-        Assert.assertEquals(mockPhotoPin3.id,
+        Assert.assertEquals(
+            mockPhotoPin3.id,
             calendarAlbumDocument.dayOfMonthToItem[1]?.photoPinId ?: ""
         )
         Assert.assertEquals(null, calendarAlbumDocument.dayOfMonthToItem[2])
     }
 
+    @Test
+    fun getAlbumDocumentOfDate() {
+        val mockPhotoPin4 = createMockPhotoPin4()
+        val albumDocument =
+            queries.getAlbumDocumentOfDate("test-member-id-1", LocalDate.of(2024, 2, 1))
+
+        Assert.assertEquals(1, albumDocument.listItems.size)
+        Assert.assertEquals(mockPhotoPin4.id, albumDocument.listItems[0].photoPinId)
+    }
+
+    @Test
+    fun getAlbumDocumentOfTag() {
+        val mockTag2 = createMockTag2()
+        val mockPhotoPin4 = createMockPhotoPin4()
+        val albumDocument = queries.getAlbumDocumentOfTag("test-member-id-1", mockTag2.id)
+
+        Assert.assertEquals(2, albumDocument.listItems.size)
+        Assert.assertEquals(mockPhotoPin4.id, albumDocument.listItems[0].photoPinId)
+    }
 
 
     companion object {
