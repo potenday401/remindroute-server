@@ -4,14 +4,15 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
-import io.ktor.server.routing.*
 import org.potenday401.member.application.dto.EmailVerificationData
 import org.potenday401.member.application.dto.MemberCreationData
 import org.potenday401.member.application.dto.PreSignupData
 import org.potenday401.member.application.service.MemberApplicationService
 import org.potenday401.member.application.service.exception.*
 import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.put
 import io.github.smiley4.ktorswaggerui.dsl.route
+import io.ktor.server.routing.Route
 
 import org.potenday401.member.application.dto.VerifiedTokenData
 
@@ -120,6 +121,29 @@ fun Route.memberRouting(memberAppService: MemberApplicationService) {
             } catch (e: MemberAlreadyExistsException) {
                 call.respondText("User already exists", status = HttpStatusCode.BadRequest)
             }
+        }
+
+        put("/{memberId}/password", {
+            description = "change password"
+            request {
+                body<MemberCreationData>()
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "success"
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Request has expired or Passwords do not match"
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Passwords do not match"
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "User already exists"
+                }
+            }
+        }) {
+
         }
 
 
