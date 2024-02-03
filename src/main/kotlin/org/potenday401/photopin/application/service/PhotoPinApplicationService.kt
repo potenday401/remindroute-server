@@ -6,6 +6,7 @@ import org.potenday401.common.domain.model.FileStorageService
 import org.potenday401.photopin.application.dto.LatLngData
 import org.potenday401.photopin.application.dto.PhotoPinCreationData
 import org.potenday401.photopin.application.dto.PhotoPinData
+import org.potenday401.photopin.application.dto.PhotoPinContentMutationData
 import org.potenday401.photopin.application.service.PhotoPinDataConverter.toPhotoPinData
 import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.domain.model.PhotoPin
@@ -34,7 +35,6 @@ class PhotoPinApplicationService(
 
     fun createPhotoPin(photoPinCreationData: PhotoPinCreationData) {
         // TODO: add tagId validation
-        // photoPinCreationData
 
         val file = createFile(
             photoPinCreationData.photoFileBase64Payload,
@@ -54,6 +54,29 @@ class PhotoPinApplicationService(
             latLng
         )
         photoPinRepository.create(photoPin)
+    }
+
+    fun changePhotoPinContent(photoPinContentMutationData: PhotoPinContentMutationData) {
+        // TODO: add tagId validation
+
+        val photoPin = photoPinRepository.findById(photoPinContentMutationData.photoPinId)
+            ?: throw Exception("photo pin not found")
+
+        var photoUrl = photoPin.photoUrl
+        if (photoPinContentMutationData.photoFileBase64Payload != null && photoPinContentMutationData.photoFileExt != null) {
+            val file = createFile(
+                photoPinContentMutationData.photoFileBase64Payload,
+                photoPinContentMutationData.photoFileExt
+            )
+            val dir = "images/${photoPin.memberId}"
+            photoUrl = fileStorageService.storeFile(dir, file).toExternalForm()
+        }
+
+        val latLng =
+            LatLng(photoPinContentMutationData.latLng.latitude, photoPinContentMutationData.latLng.longitude)
+
+        photoPin.changeContent(photoPinContentMutationData.tagIds, photoUrl, photoPinContentMutationData.photoDateTime.toLocalDateTime(), latLng)
+        photoPinRepository.update(photoPin)
     }
 
     private fun createFile(base64Payload: String, ext: String): File {

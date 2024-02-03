@@ -6,4 +6,5 @@ interface PhotoPinRepository {
     fun findAllByTagId(tagId: String): List<PhotoPin>
     fun findAll(memberId: String): List<PhotoPin>
     fun create(photoPin: PhotoPin)
+    fun update(photoPin: PhotoPin)
 }

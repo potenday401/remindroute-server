@@ -17,7 +17,7 @@ import org.potenday401.photopin.application.dto.LatLngData
 import org.potenday401.photopin.application.dto.PhotoPinCreationData
 import org.potenday401.photopin.application.service.PhotoPinApplicationService
 import org.potenday401.photopin.application.service.PhotoPinDataConverter
-import org.potenday401.photopin.domain.model.mockPhotoPin1
+import org.potenday401.photopin.domain.model.createMockPhotoPin1
 import org.potenday401.photopin.infrastructure.persistence.PhotoPinQueries
 import java.nio.charset.Charset
 
@@ -39,7 +39,7 @@ class PhotoPinRoutingTest {
             }
         }
 
-
+        val mockPhotoPin1 = createMockPhotoPin1()
         val testPhotoPin = PhotoPinDataConverter.toPhotoPinData(mockPhotoPin1)
         `when`(photoPinAppService.getPhotoPinById(mockPhotoPin1.id)).thenReturn(testPhotoPin)
 
@@ -60,7 +60,7 @@ class PhotoPinRoutingTest {
                 photoPinRouting(photoPinAppService, photoPinQueries)
             }
         }
-
+        val mockPhotoPin1 = createMockPhotoPin1()
         val data = PhotoPinCreationData(
             mockPhotoPin1.id,
             mockPhotoPin1.memberId,

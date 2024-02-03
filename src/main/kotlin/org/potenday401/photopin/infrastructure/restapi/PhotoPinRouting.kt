@@ -2,6 +2,7 @@ package org.potenday401.photopin.infrastructure.restapi
 
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.patch
 import io.github.smiley4.ktorswaggerui.dsl.route
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -89,6 +90,34 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
             val photoPinCreationData = call.receive<PhotoPinCreationData>()
             photoPinAppService.createPhotoPin(photoPinCreationData)
             call.respondText("PhotoPin created successfully", status = HttpStatusCode.Created)
+        }
+
+        patch("{id}/content", {
+            description = "patch photoPin by id"
+            request {
+                body<PhotoPinContentMutationData>()
+            }
+            response {
+                HttpStatusCode.NoContent to {
+                    description = "success"
+                }
+                HttpStatusCode.NotFound to {
+                    description = "not found"
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "exception"
+                }
+            }
+        }) {
+            val id = call.parameters["id"]
+            if (id.isNullOrEmpty()) {
+                return@patch call.respondText("id is required", status = HttpStatusCode.BadRequest)
+            }
+
+            val photoPinContentMutationData = call.receive<PhotoPinContentMutationData>()
+            photoPinAppService.changePhotoPinContent(photoPinContentMutationData)
+
+            call.respondText("not found", status = HttpStatusCode.NoContent)
         }
     }
 
