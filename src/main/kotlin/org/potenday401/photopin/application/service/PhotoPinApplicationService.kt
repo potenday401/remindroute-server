@@ -29,8 +29,8 @@ class PhotoPinApplicationService(
         }
     }
 
-    fun getAllPhotoPins(): List<PhotoPinData> {
-        return photoPinRepository.findAll().map { toPhotoPinData(it) }
+    fun getAllPhotoPins(memberId: String): List<PhotoPinData> {
+        return photoPinRepository.findAll(memberId).map { toPhotoPinData(it) }
     }
 
     fun createPhotoPin(photoPinCreationData: PhotoPinCreationData) {

@@ -34,7 +34,7 @@ class ExposedTagRepositoryTest {
 
             TagTable.insert {
                 it[id] = "test-id-2"
-                it[memberId] = "test-member-id-2"
+                it[memberId] = "test-member-id-1"
                 it[name] = "test-name-2"
                 it[createdAt] = LocalDateTime.now()
                 it[modifiedAt] = LocalDateTime.now()
@@ -68,7 +68,7 @@ class ExposedTagRepositoryTest {
 
     @Test
     fun testFindAll() {
-        val tags = repository.findAll()
+        val tags = repository.findAll("test-member-id-1")
 
         assertTrue(tags.stream().anyMatch { tag ->
             tag.id == "test-id-1" && tag.name == "test-name-1"
@@ -81,7 +81,7 @@ class ExposedTagRepositoryTest {
 
     @Test
     fun testFindAllByNameIn() {
-        val tags = repository.findAllByNameIn(listOf("test-name-1", "test-name-2"))
+        val tags = repository.findAllByNameIn("test-member-id-1",listOf("test-name-1", "test-name-2"))
 
         assertEquals(2, tags.size)
     }

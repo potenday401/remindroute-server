@@ -1,5 +1,6 @@
 package org.potenday401.tag.infrastructure.persistence
 
+import com.amazonaws.auth.policy.Principal.All
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -33,9 +34,9 @@ class ExposedTagRepository : TagRepository {
         }
     }
 
-    override fun findAllByNameIn(names: List<String>): List<Tag> {
+    override fun findAllByNameIn(memberId: String, names: List<String>): List<Tag> {
         return transaction {
-            TagTable.select { TagTable.name inList names }.map { row ->
+            TagTable.select { (TagTable.memberId eq memberId) and (TagTable.name inList names) }.map { row ->
                 Tag(
                     id = row[TagTable.id],
                     name = row[TagTable.name],
@@ -61,9 +62,9 @@ class ExposedTagRepository : TagRepository {
         }
     }
 
-    override fun findAll(): List<Tag> {
+    override fun findAll(memberId: String): List<Tag> {
         return transaction {
-            TagTable.selectAll().map { row ->
+            TagTable.select { TagTable.memberId eq memberId }.map { row ->
                 Tag(
                     id = row[TagTable.id],
                     name = row[TagTable.name],

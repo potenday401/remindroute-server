@@ -14,6 +14,7 @@ import org.potenday401.photopin.application.dto.*
 import org.potenday401.photopin.application.service.PhotoPinApplicationService
 import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.infrastructure.persistence.PhotoPinQueries
+import java.time.YearMonth
 
 fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoPinQueries: PhotoPinQueries) {
     route("/photo-pins", {
@@ -48,6 +49,11 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
 
         get({
             description = "get photoPins"
+            request {
+                queryParameter<String>("memberId") {
+                    required = true
+                }
+            }
             response {
                 HttpStatusCode.OK to {
                     description = "success"
@@ -61,7 +67,11 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
                 }
             }
         }) {
-            val photoPins = photoPinAppService.getAllPhotoPins()
+            val memberId = call.request.queryParameters["memberId"]
+            if (memberId.isNullOrEmpty()) {
+                return@get call.respondText("memberId is required", status = HttpStatusCode.BadRequest)
+            }
+            val photoPins = photoPinAppService.getAllPhotoPins(memberId)
             call.respond(photoPins)
         }
 
@@ -221,6 +231,58 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
             val mapAlbum = photoPinQueries.getMapAlbumDocument(memberId, LatLng(startLat, startLng), LatLng(endLat, endLng))
 
             call.respond(mapAlbum)
+        }
+    }
+
+    route("/calendar-album", {
+        tags = listOf("photoPins operation")
+    }) {
+        get({
+            description = "해당 연월의 가장 최신의 photoPin 을 돌려 줍니다."
+            request {
+                queryParameter<String>("memberId") {
+                    required = true
+                }
+                queryParameter<Int>("year") {
+                    required = true
+                    description = "year 로 변환 될 수 있는 숫자만 사용할 수 있습니다."
+                }
+                queryParameter<Int>("month") {
+                    required = true
+                    description = "month 로 변환 될 수 있는 숫자만 사용할 수 있습니다."
+                }
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "success"
+                    body<CalendarAlbumDocument> { description = "calendarAlbumDocument data" }
+                }
+                HttpStatusCode.NotFound to {
+                    description = "not found"
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "exception"
+                }
+            }
+        }) {
+            val memberId = call.request.queryParameters["memberId"]
+            if (memberId.isNullOrEmpty()) {
+                return@get call.respondText("memberId is required", status = HttpStatusCode.BadRequest)
+            }
+
+            val year = call.request.queryParameters["year"]?.toIntOrNull()
+            if (year == null) {
+                return@get call.respondText("year must be a valid number", status = HttpStatusCode.BadRequest)
+            }
+
+            val month = call.request.queryParameters["month"]?.toIntOrNull()
+            if (month == null) {
+                return@get call.respondText("month must be a valid number", status = HttpStatusCode.BadRequest)
+            }
+
+            val calendarAlbum = photoPinQueries.getCalendarAlbumDocument(memberId, YearMonth.of(year, month))
+
+            call.respond(calendarAlbum)
         }
     }
 }

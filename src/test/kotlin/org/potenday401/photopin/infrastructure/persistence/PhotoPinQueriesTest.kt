@@ -2,6 +2,8 @@ package org.potenday401.photopin.infrastructure.persistence
 
 import PhotoPinTable
 import PhotoPinTagIdsTable
+import PhotoPinTagIdsTable.photoPinId
+import PhotoPinTagIdsTable.tagId
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
@@ -9,10 +11,12 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.potenday401.photopin.domain.model.LatLng
+import org.potenday401.photopin.domain.model.*
+import org.potenday401.tag.domain.model.*
 import org.potenday401.tag.infrastructure.persistence.ExposedTagRepository
 import org.potenday401.tag.infrastructure.persistence.TagTable
 import java.time.LocalDateTime
+import java.time.YearMonth
 import java.util.*
 
 class PhotoPinQueriesTest {
@@ -22,75 +26,30 @@ class PhotoPinQueriesTest {
     @Before
     fun setup() {
         // 각각의 테스트마다 새로운 DB 사용
-
         val uniqueId = UUID.randomUUID().toString()
         Database.connect("jdbc:h2:mem:test-$uniqueId;DB_CLOSE_DELAY=-1;", driver = "org.h2.Driver")
         transaction {
             SchemaUtils.create(TagTable, PhotoPinTable, PhotoPinTagIdsTable)
 
-            repeat(4) { index ->
-                val tagId = "tagId$index"
-                val tagName = "tagName$index"
+            insertTag(mockTag1)
+            insertTag(mockTag2)
+            insertTag(mockTag3)
+            insertTag(mockTag4)
+            // insertTag(mockTag5)
 
-                TagTable.insert {
-                    it[id] = tagId
-                    it[memberId] = "test-member-id"
-                    it[name] = tagName
-                    it[createdAt] = LocalDateTime.now()
-                    it[modifiedAt] = LocalDateTime.now()
-                }
-            }
-            var repeatCount = 5
-            repeat(repeatCount) { photoIndex ->
-                val photoPinId = "photoPinId_$photoIndex"
-                var photoPinDateTime = LocalDateTime.now().minusDays(1)
-                var photoPinLatitude = 37.7749
-                var photoPinLongitude = -122.4194
-                if(photoIndex == 4) {
-                    photoPinDateTime = LocalDateTime.now()
-                    photoPinLatitude = 3.0
-                    photoPinLongitude = 5.0
-                }
+            insertPhotoPin(mockPhotoPin1)
+            insertPhotoPin(mockPhotoPin2)
+            insertPhotoPin(mockPhotoPin3)
+            insertPhotoPin(mockPhotoPin4)
+            insertPhotoPin(mockPhotoPin5)
+            insertPhotoPin(mockPhotoPin6)
 
-                PhotoPinTable.insert {
-                    it[id] = photoPinId
-                    it[memberId] = "test-member-id"
-                    it[photoUrl] = "http://example.com/photo$photoIndex.jpg"
-                    it[photoDateTime] = LocalDateTime.now().minusDays(photoIndex.toLong())
-                    it[latitude] = photoPinLatitude
-                    it[longitude] = photoPinLongitude
-                    it[createdAt] = photoPinDateTime
-                    it[modifiedAt] = photoPinDateTime
-                }
-
-                if (photoIndex == 0 || photoIndex == 1 || photoIndex == 2) {
-                    PhotoPinTagIdsTable.insert {
-                        it[this.photoPinId] = photoPinId
-                        it[this.tagId] = "tagId0"
-                    }
-
-                }
-
-                if (photoIndex == 2 || photoIndex == 3) {
-                    PhotoPinTagIdsTable.insert {
-                        it[this.photoPinId] = photoPinId
-                        it[this.tagId] = "tagId1"
-                    }
-                }
-
-                if (photoIndex == 4) {
-                    PhotoPinTagIdsTable.insert {
-                        it[this.photoPinId] = photoPinId
-                        it[this.tagId] = "tagId2"
-                    }
-                }
-            }
         }
     }
 
     @Test
     fun getTagAlbumDocuments() {
-        val tagAlbumDocument = queries.getTagAlbumDocument("test-member-id")
+        val tagAlbumDocument = queries.getTagAlbumDocument("test-member-id-1")
 
         Assert.assertEquals(4, tagAlbumDocument.listItems.size)
         Assert.assertEquals(tagAlbumDocument.listItems[0].tagCount, 3)
@@ -100,17 +59,58 @@ class PhotoPinQueriesTest {
 
     @Test
     fun getTagAlbumDocumentOrderByCreatedAtDesc() {
-        val tagAlbumDocument = queries.getTagAlbumDocumentOrderByCreatedAtDesc("test-member-id")
+        val tagAlbumDocument = queries.getTagAlbumDocumentOrderByCreatedAtDesc("test-member-id-1")
 
         Assert.assertEquals(4, tagAlbumDocument.listItems.size)
-        Assert.assertEquals(tagAlbumDocument.listItems[0].tagId, "tagId2")
+        Assert.assertEquals(mockTag2.id, tagAlbumDocument.listItems[0].tagId)
     }
 
     @Test
     fun getMapAlbumDocument() {
-        val mapAlbumDocument = queries.getMapAlbumDocument("test-member-id", LatLng(1.0,-1.0), LatLng(4.0, 6.0))
+        val mapAlbumDocument = queries.getMapAlbumDocument("test-member-id-1", LatLng(1.0,-1.0), LatLng(4.0, 6.0))
 
         Assert.assertEquals(1, mapAlbumDocument.listItems.size)
-        Assert.assertEquals(mapAlbumDocument.listItems[0].photoPinId, "photoPinId_4")
+        Assert.assertEquals(mockPhotoPin2.id, mapAlbumDocument.listItems[0].photoPinId)
+    }
+
+    @Test
+    fun getCalendarAlbumDocument() {
+        val calendarAlbumDocument = queries.getCalendarAlbumDocument("test-member-id-1",YearMonth.of(2023, 12))
+
+        Assert.assertEquals(2, calendarAlbumDocument.dayOfMonthToItem.size)
+        Assert.assertEquals(mockPhotoPin3.id,
+            calendarAlbumDocument.dayOfMonthToItem[1]?.photoPinId ?: ""
+        )
+        Assert.assertEquals(null, calendarAlbumDocument.dayOfMonthToItem[2])
+    }
+
+    private fun insertTag(tag: Tag) {
+        TagTable.insert {
+            it[id] = tag.id
+            it[memberId] = tag.memberId
+            it[name] = tag.name
+            it[createdAt] = tag.createdAt
+            it[modifiedAt] = tag.modifiedAt
+        }
+    }
+
+    private fun insertPhotoPin(photoPin: PhotoPin) {
+        PhotoPinTable.insert {
+            it[id] = photoPin.id
+            it[memberId] = photoPin.memberId
+            it[photoUrl] = photoPin.photoUrl
+            it[photoDateTime] = photoPin.photoDateTime
+            it[latitude] = photoPin.latLng.latitude
+            it[longitude] = photoPin.latLng.longitude
+            it[createdAt] = photoPin.createdAt
+            it[modifiedAt] = photoPin.modifiedAt
+        }
+
+        photoPin.tagIds.forEach { tagId ->
+            PhotoPinTagIdsTable.insert {
+                it[photoPinId] = photoPin.id
+                it[this.tagId] = tagId
+            }
+        }
     }
 }
