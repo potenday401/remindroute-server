@@ -58,4 +58,5 @@ fun Application.module() {
     configureTemplating()
     configureRouting(tagAppService, memberAppService, photoPinAppService, photoPinQueries, authAppService)
     configureSwagger()
+    configureStatusPages()
 }
