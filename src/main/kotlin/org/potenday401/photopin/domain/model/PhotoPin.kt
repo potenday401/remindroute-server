@@ -12,4 +12,11 @@ class PhotoPin(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val modifiedAt: LocalDateTime = LocalDateTime.now()
 ) {
+
+    fun changeContent(tagIds: List<String>, photoUrl: String, photoDateTime: LocalDateTime, latLng:LatLng) {
+        this.tagIds = tagIds
+        this.photoUrl = photoUrl
+        this.photoDateTime = photoDateTime
+        this.latLng = latLng
+    }
 }

@@ -1,4 +1,3 @@
-import PhotoPinTable.photoUrl
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -7,10 +6,9 @@ import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import org.potenday401.common.domain.model.FileStorageService
 import org.potenday401.photopin.application.dto.LatLngData
-import org.potenday401.photopin.application.dto.PhotoPinMutationData
+import org.potenday401.photopin.application.dto.PhotoPinContentMutationData
 import org.potenday401.photopin.application.service.PhotoPinApplicationService
 import org.potenday401.photopin.domain.model.LatLng
-import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.photopin.domain.model.PhotoPinRepository
 import org.potenday401.photopin.domain.model.mockPhotoPin1
 import kotlin.test.assertEquals
@@ -55,15 +53,15 @@ class PhotoPinApplicationServiceTest {
     }
 
     @Test
-    fun testUpdatePhotoPin() {
+    fun testChangePhotoPinContent() {
         `when`(photoPinRepository.findById(mockPhotoPin1.id)).thenReturn(mockPhotoPin1)
 
         val tagIds = listOf("tagId1","tagId2")
-        val photoPinMutationData = PhotoPinMutationData(mockPhotoPin1.id, tagIds, null, null,null, LatLngData(1.0,2.0))
-        photoPinApplicationService.updatePhotoPin(photoPinMutationData)
+        val photoPinContentMutationData = PhotoPinContentMutationData(mockPhotoPin1.id, tagIds, 1,null, null, LatLngData(1.0,2.0))
+        photoPinApplicationService.changePhotoPinContent(photoPinContentMutationData)
 
-        mockPhotoPin1.tagIds = photoPinMutationData.tagIds
-        mockPhotoPin1.latLng = LatLng(photoPinMutationData.latLng.latitude, photoPinMutationData.latLng.longitude)
+        mockPhotoPin1.tagIds = photoPinContentMutationData.tagIds
+        mockPhotoPin1.latLng = LatLng(photoPinContentMutationData.latLng.latitude, photoPinContentMutationData.latLng.longitude)
 
         verify(photoPinRepository).update(mockPhotoPin1)
     }

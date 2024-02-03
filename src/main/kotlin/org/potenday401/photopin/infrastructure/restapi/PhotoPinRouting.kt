@@ -85,7 +85,7 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
         patch("{id}/content", {
             description = "patch photoPin by id"
             request {
-                body<PhotoPinMutationData>()
+                body<PhotoPinContentMutationData>()
             }
             response {
                 HttpStatusCode.NoContent to {
@@ -104,8 +104,8 @@ fun Route.photoPinRouting(photoPinAppService: PhotoPinApplicationService, photoP
                 return@patch call.respondText("id is required", status = HttpStatusCode.BadRequest)
             }
 
-            val photoPinMutationData = call.receive<PhotoPinMutationData>()
-            photoPinAppService.updatePhotoPin(photoPinMutationData)
+            val photoPinContentMutationData = call.receive<PhotoPinContentMutationData>()
+            photoPinAppService.changePhotoPinContent(photoPinContentMutationData)
 
             call.respondText("not found", status = HttpStatusCode.NoContent)
         }

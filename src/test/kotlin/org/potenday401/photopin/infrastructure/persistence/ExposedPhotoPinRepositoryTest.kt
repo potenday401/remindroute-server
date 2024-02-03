@@ -2,6 +2,7 @@ package org.potenday401.photopin.infrastructure.persistence
 
 import ExposedPhotoPinRepository
 import PhotoPinTable
+import PhotoPinTable.photoUrl
 import PhotoPinTagIdsTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -11,6 +12,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.potenday401.photopin.domain.model.*
+import org.potenday401.util.toLocalDateTime
 import java.time.LocalDateTime
 import java.util.*
 
@@ -84,6 +86,8 @@ class ExposedPhotoPinRepositoryTest {
             foundPhotoPin.tagIds = newTagIds
             foundPhotoPin.latLng = newLatLng
 
+            foundPhotoPin.changeContent(newTagIds, "newPhotoUrl", LocalDateTime.of(2024,1,12,23,55), newLatLng)
+
             // when
             repository.update(foundPhotoPin)
             val foundAgainPhotoPin = repository.findById(mockPhotoPin1.id) ?: throw Exception("not-found")
@@ -95,6 +99,7 @@ class ExposedPhotoPinRepositoryTest {
             assertEquals(foundAgainPhotoPin.latLng.longitude.toString(), newLatLng.longitude.toString())
             assertEquals(foundAgainPhotoPin.tagIds[0], newTagIds[0])
             assertEquals(foundAgainPhotoPin.tagIds[1], newTagIds[1])
+            assertEquals(foundAgainPhotoPin.photoUrl, "newPhotoUrl")
         }
     }
 
