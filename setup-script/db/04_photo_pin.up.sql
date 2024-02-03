@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `photo_pin_tag_ids` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-INSERT INTO `photo_pin` (`id`, `member_id`, `photo_url`, `photo_date_time`, `latitude`, `longitude`, `longitude`,`locality`,`sub_locality`,`created_at`, `modified_at`) VALUES
+INSERT INTO `photo_pin` (`id`, `member_id`, `photo_url`, `photo_date_time`, `latitude`, `longitude`,`locality`,`sub_locality`,`created_at`, `modified_at`) VALUES
     ('photopin1', 'member1', 'https://dummyimage.com/300.png/01f/fff', '2024-01-01 00:00:00', -34.603722, -58.381592, 'seoul','mapo-gu','2024-01-01 00:00:00', '2024-01-01 00:00:00'),
     ('photopin2', 'member1', 'https://dummyimage.com/300.png/02f/fff', '2024-01-02 00:00:00', 34.052234, -118.243685, 'seoul','mapo-gu','2024-01-02 00:00:00', '2024-01-02 00:00:00'),
     ('photopin3', 'member1', 'https://dummyimage.com/300.png/03f/fff', '2024-01-02 00:00:00', 34.052234, -118.243685, 'seoul','mapo-gu','2024-01-02 00:00:00', '2024-01-02 00:00:00'),
