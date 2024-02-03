@@ -10,6 +10,8 @@ data class PhotoPinData(
     val photoUrl: String,
     val photoDateTime: Long,
     val latLng: LatLngData,
+    val locality: String,
+    val subLocality: String,
     val createdAt: Long,
     val modifiedAt: Long
 ) {

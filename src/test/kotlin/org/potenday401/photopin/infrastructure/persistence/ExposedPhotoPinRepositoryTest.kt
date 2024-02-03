@@ -11,6 +11,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.potenday401.photopin.domain.model.*
+import org.potenday401.photopin.infrastructure.persistence.PhotoPinQueriesTest.Companion.insertPhotoPin
 import java.time.LocalDateTime
 import java.util.*
 
@@ -30,36 +31,8 @@ class ExposedPhotoPinRepositoryTest {
             val mockPhotoPin1 = createMockPhotoPin1()
             val mockPhotoPin2 = createMockPhotoPin2()
 
-
-            PhotoPinTable.insert {
-                it[id] = mockPhotoPin1.id
-                it[memberId] = mockPhotoPin1.memberId
-                it[photoUrl] = mockPhotoPin1.photoUrl
-                it[photoDateTime] = mockPhotoPin1.photoDateTime
-                it[latitude] = mockPhotoPin1.latLng.latitude
-                it[longitude] = mockPhotoPin1.latLng.longitude
-                it[createdAt] = mockPhotoPin1.createdAt
-                it[modifiedAt] = mockPhotoPin1.modifiedAt
-            }
-
-            mockPhotoPin1.tagIds.forEach { tagId ->
-                PhotoPinTagIdsTable.insert {
-                    it[photoPinId] = mockPhotoPin1.id
-                    it[this.tagId] = tagId
-                }
-            }
-
-            PhotoPinTable.insert {
-                it[id] = mockPhotoPin2.id
-                it[memberId] = mockPhotoPin2.memberId
-                it[photoUrl] = mockPhotoPin2.photoUrl
-                it[photoDateTime] = mockPhotoPin2.photoDateTime
-                it[latitude] = mockPhotoPin2.latLng.latitude
-                it[longitude] = mockPhotoPin2.latLng.longitude
-                it[createdAt] = mockPhotoPin2.createdAt
-                it[modifiedAt] = mockPhotoPin2.modifiedAt
-            }
-
+            insertPhotoPin(mockPhotoPin1)
+            insertPhotoPin(mockPhotoPin2)
         }
     }
 
@@ -73,6 +46,8 @@ class ExposedPhotoPinRepositoryTest {
         assertEquals(mockPhotoPin1.memberId, foundPhotoPin?.memberId)
         assertEquals(mockPhotoPin1.latLng.latitude, foundPhotoPin?.latLng?.latitude)
         assertEquals(mockPhotoPin1.latLng.longitude, foundPhotoPin?.latLng?.longitude)
+        assertEquals(mockPhotoPin1.locality, foundPhotoPin?.locality)
+        assertEquals(mockPhotoPin1.subLocality, foundPhotoPin?.subLocality)
         assertEquals(mockPhotoPin1.tagIds[0], foundPhotoPin?.tagIds?.get(0) ?: "")
     }
 
@@ -88,7 +63,7 @@ class ExposedPhotoPinRepositoryTest {
         foundPhotoPin.tagIds = newTagIds
         foundPhotoPin.latLng = newLatLng
 
-        foundPhotoPin.changeContent(newTagIds, "newPhotoUrl", LocalDateTime.of(2024,1,12,23,55), newLatLng)
+        foundPhotoPin.changeContent(newTagIds, "newPhotoUrl", LocalDateTime.of(2024,1,12,23,55), newLatLng, "","")
 
         // when
         repository.update(foundPhotoPin)
@@ -102,6 +77,8 @@ class ExposedPhotoPinRepositoryTest {
         assertEquals(foundAgainPhotoPin.tagIds[0], newTagIds[0])
         assertEquals(foundAgainPhotoPin.tagIds[1], newTagIds[1])
         assertEquals(foundAgainPhotoPin.photoUrl, "newPhotoUrl")
+        assertEquals(foundAgainPhotoPin.locality, "")
+        assertEquals(foundAgainPhotoPin.subLocality, "")
     }
 
     @Test

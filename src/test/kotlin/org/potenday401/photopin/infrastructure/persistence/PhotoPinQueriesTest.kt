@@ -96,33 +96,41 @@ class PhotoPinQueriesTest {
         Assert.assertEquals(null, calendarAlbumDocument.dayOfMonthToItem[2])
     }
 
-    private fun insertTag(tag: Tag) {
-        TagTable.insert {
-            it[id] = tag.id
-            it[memberId] = tag.memberId
-            it[name] = tag.name
-            it[createdAt] = tag.createdAt
-            it[modifiedAt] = tag.modifiedAt
-        }
-    }
 
-    private fun insertPhotoPin(photoPin: PhotoPin) {
-        PhotoPinTable.insert {
-            it[id] = photoPin.id
-            it[memberId] = photoPin.memberId
-            it[photoUrl] = photoPin.photoUrl
-            it[photoDateTime] = photoPin.photoDateTime
-            it[latitude] = photoPin.latLng.latitude
-            it[longitude] = photoPin.latLng.longitude
-            it[createdAt] = photoPin.createdAt
-            it[modifiedAt] = photoPin.modifiedAt
+
+    companion object {
+        fun insertTag(tag: Tag) {
+            TagTable.insert {
+                it[id] = tag.id
+                it[memberId] = tag.memberId
+                it[name] = tag.name
+                it[createdAt] = tag.createdAt
+                it[modifiedAt] = tag.modifiedAt
+            }
         }
 
-        photoPin.tagIds.forEach { tagId ->
-            PhotoPinTagIdsTable.insert {
-                it[photoPinId] = photoPin.id
-                it[this.tagId] = tagId
+        fun insertPhotoPin(photoPin: PhotoPin) {
+            PhotoPinTable.insert {
+                it[id] = photoPin.id
+                it[memberId] = photoPin.memberId
+                it[photoUrl] = photoPin.photoUrl
+                it[photoDateTime] = photoPin.photoDateTime
+                it[latitude] = photoPin.latLng.latitude
+                it[longitude] = photoPin.latLng.longitude
+                it[locality] = photoPin.locality
+                it[subLocality] = photoPin.subLocality
+                it[createdAt] = photoPin.createdAt
+                it[modifiedAt] = photoPin.modifiedAt
+            }
+
+            photoPin.tagIds.forEach { tagId ->
+                PhotoPinTagIdsTable.insert {
+                    it[photoPinId] = photoPin.id
+                    it[this.tagId] = tagId
+                }
             }
         }
     }
+
+
 }
