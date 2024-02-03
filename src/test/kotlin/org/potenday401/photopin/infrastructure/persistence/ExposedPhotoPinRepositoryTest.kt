@@ -75,45 +75,41 @@ class ExposedPhotoPinRepositoryTest {
 
     @Test
     fun testUpdate() {
-        transaction {
-            // given
-            val foundPhotoPin = repository.findById(mockPhotoPin1.id) ?: throw Exception("not-found")
+        // given
+        val foundPhotoPin = repository.findById(mockPhotoPin1.id) ?: throw Exception("not-found")
 
-            val newLatLng =  LatLng(1.0,2.0)
-            val newTagIds = mutableListOf("test-tag-id-4","test-tag-id-5")
+        val newLatLng =  LatLng(1.0,2.0)
+        val newTagIds = mutableListOf("test-tag-id-4","test-tag-id-5")
 
-            foundPhotoPin.tagIds = newTagIds
-            foundPhotoPin.latLng = newLatLng
+        foundPhotoPin.tagIds = newTagIds
+        foundPhotoPin.latLng = newLatLng
 
-            foundPhotoPin.changeContent(newTagIds, "newPhotoUrl", LocalDateTime.of(2024,1,12,23,55), newLatLng)
+        foundPhotoPin.changeContent(newTagIds, "newPhotoUrl", LocalDateTime.of(2024,1,12,23,55), newLatLng)
 
-            // when
-            repository.update(foundPhotoPin)
-            val foundAgainPhotoPin = repository.findById(mockPhotoPin1.id) ?: throw Exception("not-found")
+        // when
+        repository.update(foundPhotoPin)
+        val foundAgainPhotoPin = repository.findById(mockPhotoPin1.id) ?: throw Exception("not-found")
 
-            // then
-            assertEquals(foundAgainPhotoPin.id, foundPhotoPin.id)
-            assertEquals(foundAgainPhotoPin.memberId, foundPhotoPin.memberId)
-            assertEquals(foundAgainPhotoPin.latLng.latitude.toString(), newLatLng.latitude.toString())
-            assertEquals(foundAgainPhotoPin.latLng.longitude.toString(), newLatLng.longitude.toString())
-            assertEquals(foundAgainPhotoPin.tagIds[0], newTagIds[0])
-            assertEquals(foundAgainPhotoPin.tagIds[1], newTagIds[1])
-            assertEquals(foundAgainPhotoPin.photoUrl, "newPhotoUrl")
-        }
+        // then
+        assertEquals(foundAgainPhotoPin.id, foundPhotoPin.id)
+        assertEquals(foundAgainPhotoPin.memberId, foundPhotoPin.memberId)
+        assertEquals(foundAgainPhotoPin.latLng.latitude.toString(), newLatLng.latitude.toString())
+        assertEquals(foundAgainPhotoPin.latLng.longitude.toString(), newLatLng.longitude.toString())
+        assertEquals(foundAgainPhotoPin.tagIds[0], newTagIds[0])
+        assertEquals(foundAgainPhotoPin.tagIds[1], newTagIds[1])
+        assertEquals(foundAgainPhotoPin.photoUrl, "newPhotoUrl")
     }
 
     @Test
     fun testCreate() {
-        transaction {
-            repository.create(mockPhotoPin5)
-            val result = repository.findById(mockPhotoPin5.id)
-            assertEquals(mockPhotoPin5.id, result?.id)
-            assertEquals(mockPhotoPin5.memberId, result?.memberId)
-            assertEquals(mockPhotoPin5.latLng.latitude, result?.latLng?.latitude)
-            assertEquals(mockPhotoPin5.latLng.longitude, result?.latLng?.longitude)
-            assertEquals(mockPhotoPin5.tagIds[0], result?.tagIds?.get(0) ?: "")
-            assertEquals(mockPhotoPin5.tagIds[1], result?.tagIds?.get(1) ?: "")
-        }
+        repository.create(mockPhotoPin5)
+        val result = repository.findById(mockPhotoPin5.id)
+        assertEquals(mockPhotoPin5.id, result?.id)
+        assertEquals(mockPhotoPin5.memberId, result?.memberId)
+        assertEquals(mockPhotoPin5.latLng.latitude, result?.latLng?.latitude)
+        assertEquals(mockPhotoPin5.latLng.longitude, result?.latLng?.longitude)
+        assertEquals(mockPhotoPin5.tagIds[0], result?.tagIds?.get(0) ?: "")
+        assertEquals(mockPhotoPin5.tagIds[1], result?.tagIds?.get(1) ?: "")
     }
 
     @Test

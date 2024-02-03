@@ -5,7 +5,7 @@ run:
 	./gradlew clean buildFatJar && java -Duser.timezone="Asia/Seoul" -jar build/libs/remindroute.jar
 
 test:
-	./gradlew clean test
+	./gradlew clean test -Duser.timezone="Asia/Seoul"
 
 ssh:
 	ssh -i pinpong.pem ec2-user@ec2-44-201-161-53.compute-1.amazonaws.com
