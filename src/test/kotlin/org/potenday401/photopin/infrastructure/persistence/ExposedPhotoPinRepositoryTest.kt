@@ -2,7 +2,6 @@ package org.potenday401.photopin.infrastructure.persistence
 
 import ExposedPhotoPinRepository
 import PhotoPinTable
-import PhotoPinTable.photoUrl
 import PhotoPinTagIdsTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -12,7 +11,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.potenday401.photopin.domain.model.*
-import org.potenday401.util.toLocalDateTime
 import java.time.LocalDateTime
 import java.util.*
 
@@ -28,6 +26,10 @@ class ExposedPhotoPinRepositoryTest {
         transaction {
             SchemaUtils.create(PhotoPinTable)
             SchemaUtils.create(PhotoPinTagIdsTable)
+
+            val mockPhotoPin1 = createMockPhotoPin1()
+            val mockPhotoPin2 = createMockPhotoPin2()
+
 
             PhotoPinTable.insert {
                 it[id] = mockPhotoPin1.id
@@ -63,6 +65,7 @@ class ExposedPhotoPinRepositoryTest {
 
     @Test
     fun testFindById() {
+        val mockPhotoPin1 = createMockPhotoPin1()
         val foundPhotoPin = repository.findById(mockPhotoPin1.id)
 
         assertNotNull(foundPhotoPin)
@@ -76,6 +79,7 @@ class ExposedPhotoPinRepositoryTest {
     @Test
     fun testUpdate() {
         // given
+        val mockPhotoPin1 = createMockPhotoPin1()
         val foundPhotoPin = repository.findById(mockPhotoPin1.id) ?: throw Exception("not-found")
 
         val newLatLng =  LatLng(1.0,2.0)
@@ -102,6 +106,7 @@ class ExposedPhotoPinRepositoryTest {
 
     @Test
     fun testCreate() {
+        val mockPhotoPin5 = createMockPhotoPin5()
         repository.create(mockPhotoPin5)
         val result = repository.findById(mockPhotoPin5.id)
         assertEquals(mockPhotoPin5.id, result?.id)
@@ -114,6 +119,8 @@ class ExposedPhotoPinRepositoryTest {
 
     @Test
     fun testFindAll() {
+        val mockPhotoPin1 = createMockPhotoPin1()
+        val mockPhotoPin2 = createMockPhotoPin1()
         val photoPins = repository.findAll(mockPhotoPin1.memberId)
 
         assertTrue(photoPins.stream().anyMatch { photoPin ->

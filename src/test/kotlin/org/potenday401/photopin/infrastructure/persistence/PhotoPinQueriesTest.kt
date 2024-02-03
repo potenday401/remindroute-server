@@ -2,8 +2,6 @@ package org.potenday401.photopin.infrastructure.persistence
 
 import PhotoPinTable
 import PhotoPinTagIdsTable
-import PhotoPinTagIdsTable.photoPinId
-import PhotoPinTagIdsTable.tagId
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
@@ -15,7 +13,6 @@ import org.potenday401.photopin.domain.model.*
 import org.potenday401.tag.domain.model.*
 import org.potenday401.tag.infrastructure.persistence.ExposedTagRepository
 import org.potenday401.tag.infrastructure.persistence.TagTable
-import java.time.LocalDateTime
 import java.time.YearMonth
 import java.util.*
 
@@ -31,11 +28,23 @@ class PhotoPinQueriesTest {
         transaction {
             SchemaUtils.create(TagTable, PhotoPinTable, PhotoPinTagIdsTable)
 
+            val mockTag1 = createMockTag1()
+            val mockTag2 = createMockTag2()
+            val mockTag3 = createMockTag3()
+            val mockTag4 = createMockTag4()
+
             insertTag(mockTag1)
             insertTag(mockTag2)
             insertTag(mockTag3)
             insertTag(mockTag4)
             // insertTag(mockTag5)
+
+            val mockPhotoPin1 = createMockPhotoPin1()
+            val mockPhotoPin2 = createMockPhotoPin2()
+            val mockPhotoPin3 = createMockPhotoPin3()
+            val mockPhotoPin4 = createMockPhotoPin4()
+            val mockPhotoPin5 = createMockPhotoPin5()
+            val mockPhotoPin6 = createMockPhotoPin6()
 
             insertPhotoPin(mockPhotoPin1)
             insertPhotoPin(mockPhotoPin2)
@@ -43,7 +52,6 @@ class PhotoPinQueriesTest {
             insertPhotoPin(mockPhotoPin4)
             insertPhotoPin(mockPhotoPin5)
             insertPhotoPin(mockPhotoPin6)
-
         }
     }
 
@@ -59,6 +67,8 @@ class PhotoPinQueriesTest {
 
     @Test
     fun getTagAlbumDocumentOrderByCreatedAtDesc() {
+        val mockTag2 = createMockTag2()
+
         val tagAlbumDocument = queries.getTagAlbumDocumentOrderByCreatedAtDesc("test-member-id-1")
 
         Assert.assertEquals(4, tagAlbumDocument.listItems.size)
@@ -67,6 +77,7 @@ class PhotoPinQueriesTest {
 
     @Test
     fun getMapAlbumDocument() {
+        val mockPhotoPin2 = createMockPhotoPin2()
         val mapAlbumDocument = queries.getMapAlbumDocument("test-member-id-1", LatLng(1.0,-1.0), LatLng(4.0, 6.0))
 
         Assert.assertEquals(1, mapAlbumDocument.listItems.size)
@@ -75,6 +86,7 @@ class PhotoPinQueriesTest {
 
     @Test
     fun getCalendarAlbumDocument() {
+        val mockPhotoPin3 = createMockPhotoPin3()
         val calendarAlbumDocument = queries.getCalendarAlbumDocument("test-member-id-1",YearMonth.of(2023, 12))
 
         Assert.assertEquals(2, calendarAlbumDocument.dayOfMonthToItem.size)
