@@ -1,5 +1,6 @@
 package org.potenday401.photopin.application.dto
 
+import PhotoPinTable.subLocality
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,6 +11,8 @@ data class PhotoPinCreationData(
     val photoDateTime: Long,
     val photoFileBase64Payload: String,
     val photoFileExt: String,
-    val latLng: LatLngData
+    val latLng: LatLngData,
+    val locality: String,
+    val subLocality: String
 ) {
 }

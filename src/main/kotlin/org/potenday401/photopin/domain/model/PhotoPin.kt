@@ -9,6 +9,8 @@ class PhotoPin(
     var photoUrl: String,
     var photoDateTime: LocalDateTime,
     var latLng: LatLng,
+    var locality: String,
+    var subLocality: String,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val modifiedAt: LocalDateTime = LocalDateTime.now()
 ) {

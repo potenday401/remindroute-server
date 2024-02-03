@@ -181,24 +181,10 @@ class PhotoPinQueries(
                 .groupBy { it[PhotoPinTable.id] }
                 .map { (_, rows) ->
                     val firstRow = rows.first()
-                    PhotoPin(
-                        id = firstRow[PhotoPinTable.id],
-                        memberId = firstRow[PhotoPinTable.memberId],
-                        tagIds = rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }.distinct(),
-                        photoUrl = firstRow[PhotoPinTable.photoUrl],
-                        photoDateTime = firstRow[PhotoPinTable.photoDateTime],
-                        latLng = LatLng(
-                            latitude = firstRow[latitude],
-                            longitude = firstRow[longitude]
-                        ),
-                        createdAt = firstRow[PhotoPinTable.createdAt],
-                        modifiedAt = firstRow[PhotoPinTable.modifiedAt]
-                    )
+                    firstRow.toPhotoPin(rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }.distinct())
                 }
                 .singleOrNull()
 
         }
     }
-
-
 }

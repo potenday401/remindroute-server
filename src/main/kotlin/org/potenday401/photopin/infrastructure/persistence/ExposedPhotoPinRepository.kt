@@ -1,5 +1,7 @@
 import PhotoPinTable.latitude
+import PhotoPinTable.locality
 import PhotoPinTable.longitude
+import PhotoPinTable.subLocality
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
@@ -8,6 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.potenday401.photopin.domain.model.LatLng
 import org.potenday401.photopin.domain.model.PhotoPin
 import org.potenday401.photopin.domain.model.PhotoPinRepository
+import org.potenday401.photopin.infrastructure.persistence.toPhotoPin
 import org.potenday401.tag.domain.model.Tag
 import org.potenday401.tag.infrastructure.persistence.TagTable
 import java.time.LocalDateTime
@@ -21,11 +24,13 @@ object PhotoPinTagIdsTable : Table("photo_pin_tag_ids") {
 
 object PhotoPinTable : Table("photo_pin") {
     val id = varchar("id", 64)
-    val memberId = varchar("member_id", 64)
-    val photoUrl = varchar("photo_url", 255)
+    val memberId = varchar("member_id", 63)
+    val photoUrl = varchar("photo_url", 256)
     val photoDateTime = datetime("photo_date_time")
     val latitude = double("latitude")
     val longitude = double("longitude")
+    val locality = varchar("locality", 256)
+    val subLocality = varchar("sub_locality", 256)
     val createdAt = datetime("created_at")
     val modifiedAt = datetime("modified_at")
 
@@ -42,6 +47,8 @@ class ExposedPhotoPinRepository : PhotoPinRepository {
                 it[photoDateTime] = photoPin.photoDateTime
                 it[latitude] = photoPin.latLng.latitude
                 it[longitude] = photoPin.latLng.longitude
+                it[locality] = photoPin.locality
+                it[subLocality] = photoPin.subLocality
                 it[createdAt] = photoPin.createdAt
                 it[modifiedAt] = photoPin.modifiedAt
             }
@@ -63,6 +70,8 @@ class ExposedPhotoPinRepository : PhotoPinRepository {
                 it[photoDateTime] = photoPin.photoDateTime
                 it[latitude] = photoPin.latLng.latitude
                 it[longitude] = photoPin.latLng.longitude
+                it[locality] = photoPin.locality
+                it[subLocality] = photoPin.subLocality
                 it[modifiedAt] = LocalDateTime.now()
             }
 
@@ -85,19 +94,7 @@ class ExposedPhotoPinRepository : PhotoPinRepository {
                 val tagIds = PhotoPinTagIdsTable.select { PhotoPinTagIdsTable.photoPinId eq id }
                     .map { it[PhotoPinTagIdsTable.tagId] }
 
-                PhotoPin(
-                    id = row[PhotoPinTable.id],
-                    memberId = row[PhotoPinTable.memberId],
-                    tagIds = tagIds,
-                    photoUrl = row[PhotoPinTable.photoUrl],
-                    photoDateTime = row[PhotoPinTable.photoDateTime],
-                    latLng = LatLng(
-                        latitude = row[PhotoPinTable.latitude],
-                        longitude = row[PhotoPinTable.longitude]
-                    ),
-                    createdAt = row[PhotoPinTable.createdAt],
-                    modifiedAt = row[PhotoPinTable.modifiedAt]
-                )
+                row.toPhotoPin(tagIds)
             }
         }
     }
@@ -112,19 +109,7 @@ class ExposedPhotoPinRepository : PhotoPinRepository {
                 .groupBy { it[PhotoPinTable.id] }
                 .map { (_, rows) ->
                     val firstRow = rows.first()
-                    PhotoPin(
-                        id = firstRow[PhotoPinTable.id],
-                        memberId = firstRow[PhotoPinTable.memberId],
-                        tagIds = rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }.distinct(),
-                        photoUrl = firstRow[PhotoPinTable.photoUrl],
-                        photoDateTime = firstRow[PhotoPinTable.photoDateTime],
-                        latLng = LatLng(
-                            latitude = firstRow[latitude],
-                            longitude = firstRow[longitude]
-                        ),
-                        createdAt = firstRow[PhotoPinTable.createdAt],
-                        modifiedAt = firstRow[PhotoPinTable.modifiedAt]
-                    )
+                    firstRow.toPhotoPin(rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }.distinct())
                 }
         }
     }
@@ -139,20 +124,10 @@ class ExposedPhotoPinRepository : PhotoPinRepository {
                 .groupBy { it[PhotoPinTable.id] }
                 .map { (_, rows) ->
                     val firstRow = rows.first()
-                    PhotoPin(
-                        id = firstRow[PhotoPinTable.id],
-                        memberId = firstRow[PhotoPinTable.memberId],
-                        tagIds = rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }.distinct(),
-                        photoUrl = firstRow[PhotoPinTable.photoUrl],
-                        photoDateTime = firstRow[PhotoPinTable.photoDateTime],
-                        latLng = LatLng(
-                            latitude = firstRow[latitude],
-                            longitude = firstRow[longitude]
-                        ),
-                        createdAt = firstRow[PhotoPinTable.createdAt],
-                        modifiedAt = firstRow[PhotoPinTable.modifiedAt]
-                    )
+                    firstRow.toPhotoPin(rows.mapNotNull { it[PhotoPinTagIdsTable.tagId] }.distinct())
                 }
         }
     }
+
+
 }

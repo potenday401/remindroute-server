@@ -68,7 +68,9 @@ class PhotoPinRoutingTest {
             1L,
             "paylaod",
             "ext",
-            LatLngData(6.0, 5.0)
+            LatLngData(6.0, 5.0),
+            "seoul",
+            "mapo"
         )
 
         val response = client.post("/photo-pins") {

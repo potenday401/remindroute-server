@@ -1,6 +1,7 @@
 package org.potenday401.photopin.application.service
 
 
+import PhotoPinTable.locality
 import org.potenday401.common.domain.model.File
 import org.potenday401.common.domain.model.FileStorageService
 import org.potenday401.photopin.application.dto.LatLngData
@@ -51,7 +52,9 @@ class PhotoPinApplicationService(
             photoPinCreationData.tagIds,
             photoUrl,
             photoPinCreationData.photoDateTime.toLocalDateTime(),
-            latLng
+            latLng,
+            photoPinCreationData.locality,
+            photoPinCreationData.subLocality
         )
         photoPinRepository.create(photoPin)
     }
@@ -73,9 +76,17 @@ class PhotoPinApplicationService(
         }
 
         val latLng =
-            LatLng(photoPinContentMutationData.latLng.latitude, photoPinContentMutationData.latLng.longitude)
+            LatLng(
+                photoPinContentMutationData.latLng.latitude,
+                photoPinContentMutationData.latLng.longitude
+            )
 
-        photoPin.changeContent(photoPinContentMutationData.tagIds, photoUrl, photoPinContentMutationData.photoDateTime.toLocalDateTime(), latLng)
+        photoPin.changeContent(
+            photoPinContentMutationData.tagIds,
+            photoUrl,
+            photoPinContentMutationData.photoDateTime.toLocalDateTime(),
+            latLng
+        )
         photoPinRepository.update(photoPin)
     }
 

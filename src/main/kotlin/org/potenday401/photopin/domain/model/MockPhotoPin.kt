@@ -13,6 +13,8 @@ fun createMockPhotoPin1() = PhotoPin(
     "url",
     LocalDateTime.of(2024, 1, 23, 0, 0),
     LatLng(37.7749, -122.4194),
+    "seoul",
+    "mapo-gu",
     LocalDateTime.of(2024, 1, 23, 0, 0),
 )
 
@@ -23,6 +25,8 @@ fun createMockPhotoPin2() = PhotoPin(
     "url",
     LocalDateTime.of(2023, 12, 23, 0, 0),
     LatLng(3.0, 4.0),
+    "seoul",
+    "mapo-gu",
     LocalDateTime.of(2023, 12, 23, 0, 0),
 )
 
@@ -33,6 +37,8 @@ fun createMockPhotoPin3() = PhotoPin(
     "url",
     LocalDateTime.of(2023, 12, 1, 0, 0),
     LatLng(37.7749, -122.4194),
+    "seoul",
+    "mapo-gu",
     LocalDateTime.of(2023, 12, 1, 0, 0),
 )
 
@@ -43,6 +49,8 @@ fun createMockPhotoPin4() = PhotoPin(
     "url",
     LocalDateTime.of(2024, 2, 1, 0, 0),
     LatLng(37.7749, -122.4194),
+    "seoul",
+    "mapo-gu",
     LocalDateTime.of(2024, 2, 1, 0, 0),
 
 )
@@ -54,6 +62,8 @@ fun createMockPhotoPin5() = PhotoPin(
     "url",
     LocalDateTime.of(2024, 1, 14, 0, 0),
     LatLng(37.7749, -122.4194),
+    "seoul",
+    "mapo-gu",
     LocalDateTime.of(2024, 1, 14, 0, 0),
 )
 
@@ -64,5 +74,7 @@ fun createMockPhotoPin6() = PhotoPin(
     "url",
     LocalDateTime.of(2024, 1, 12, 0, 0),
     LatLng(37.7749, -122.4194),
+    "seoul",
+    "mapo-gu",
     LocalDateTime.of(2024, 1, 12, 0, 0),
 )
